@@ -89,7 +89,7 @@ def write_date(data, outfn):
     return
 
 
-def download_data(station, start_date, end_date, verbose=False):
+def download_station(station, start_date, end_date, verbose=False):
     """Download data for a station for a given time period
 
     :station: str station identifier e.g. PADK
