@@ -83,7 +83,7 @@ def fetch_data(uri):
     return ""
 
 
-def write_date(data, outfn):
+def write_data(data, outfn):
     """Writes data to file"""
     out = open(outfn, "w")
     out.write(data)
