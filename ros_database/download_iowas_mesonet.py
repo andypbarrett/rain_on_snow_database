@@ -98,6 +98,8 @@ def download_station(station, start_date, end_date, verbose=False):
     :start_date: datetime object, start datetime for download
     :end_date: datetime object, end datetime for download"""
 
+    uri = create_download_uri(station, start_date, end_date)
+    
     if verbose: print("Downloading: {station} {start_date.strftime('%Y-%m-%d')} to {end_date.strftime('%Y-%m-%d')}")
     data = fetch_data(uri)
     outfn = make_outfilename(station, start_date, end_date)
