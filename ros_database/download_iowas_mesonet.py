@@ -5,6 +5,7 @@ from __future__ import print_function
 import json
 import time
 import datetime
+from pathlib import Path
 
 from urllib.request import urlopen
 
@@ -13,6 +14,7 @@ MAX_ATTEMPTS = 6
 # HTTPS here can be problematic for installs that don't have Lets Encrypt CA
 SERVICE = "http://mesonet.agron.iastate.edu/cgi-bin/request/asos.py?"
 
+OUTPATH = Path('.')
 
 def get_station_list(network):
     """Returns a list of stations in a network"""
