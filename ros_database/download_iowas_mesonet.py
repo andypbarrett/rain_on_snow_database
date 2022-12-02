@@ -44,8 +44,8 @@ def create_download_uri(station, start_date, end_date):
     service = (
         SERVICE +
         "data=all&tz=Etc/UTC&format=comma&latlon=yes&" +
-        startts.strftime("year1=%Y&month1=%m&day1=%d&") +
-        endts.strftime("year2=%Y&month2=%m&day2=%d&") +
+        start_date.strftime("year1=%Y&month1=%m&day1=%d&") +
+        end_date.strftime("year2=%Y&month2=%m&day2=%d&") +
         f"%s&station={station}"
         )
     return service
