@@ -106,15 +106,19 @@ def download_station(station, start_date, end_date, verbose=False):
     return
 
 
-def get_asos_data():
+def get_asos_data(year):
     """Our main method"""
     # timestamps in UTC to request data for
-    startts = datetime.datetime(2012, 8, 1)
-    endts = datetime.datetime(2012, 9, 1)
+    station = 'PADK'
+    startts = datetime.datetime(year, 1, 1)
+    endts = datetime.datetime(year, 12, 31)
 
     # Write this function
     # stations = get_stations_from_filelist("mystations.txt")
 
+    download_station(station, startts, endts)
+    
 if __name__ == "__main__":
-    get_data()
+    year = 2021
+    get_asos_data(year)
 
