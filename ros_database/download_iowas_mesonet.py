@@ -108,19 +108,21 @@ def download_station(station, start_date, end_date, verbose=False):
     return
 
 
-def download_asos_data(years=None, stations=None, station_file=None, update=True):
+def download_asos_data(years=None, stations=None, station_file=None,
+                       update=True):
     """Downloads ASOS records from University of Iowa Mesonet site.
 
     Data are downloaded for each station by year.  For the current year, records 
     are retrived up to the date of the request
 
-    :years: a list of years as integers
+    :years: int, a single year, a list of years to download, or a range of years.
     :stations: a list of station ids as str, e.g. PABK
     :station_file: file containing a list of stations.  stations is ignored if 
                    a file is provided
     :update: boolean update station records to current date.  The output path 
              defined in OUTPATH is searched to generate a list of station records to
-             update
+             update.  If no current files are found in OUTPATH an error is raised.
+             years, stations and station_file are ignored if update=True.
     """
 
     
