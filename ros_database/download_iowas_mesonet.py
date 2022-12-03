@@ -91,25 +91,32 @@ def write_data(data, outfn):
     return
 
 
-def download_station(station, start_date, end_date, verbose=False):
+def download_station(station, year, verbose=False):
     """Download data for a station for a given time period
 
     :station: str station identifier e.g. PADK
-    :start_date: datetime object, start datetime for download
-    :end_date: datetime object, end datetime for download"""
-
+    :year: int: year to retrieve.  If year is current year, records up 
+           to current date are retrived.
+    :verbose: verbose output
+    """
+    # timestamps in UTC to request data for
+    start_date = datetime.datetime(year, 1, 1)
+    end_date = datetime.datetime(year, 12, 31)
     uri = create_download_uri(station, start_date, end_date)
     
-    if verbose: print("Downloading: {station} {start_date.strftime('%Y-%m-%d')} to {end_date.strftime('%Y-%m-%d')}")
+    if verbose: print(f"Downloading: {station} "
+                      f"{start_date.strftime('%Y-%m-%d')} to "
+                      f"{end_date.strftime('%Y-%m-%d')}")
     data = fetch_data(uri)
+    
     outfn = make_outfilename(station, start_date, end_date)
-    if verbose: print("Writing data to {outfn}")
+    if verbose: print(f"Writing data to {outfn}")
     write_data(data, outfn)
     return
 
 
 def download_asos_data(years=None, stations=None, station_file=None,
-                       update=True):
+                       update=True, verbose=False):
     """Downloads ASOS records from University of Iowa Mesonet site.
 
     Data are downloaded for each station by year.  For the current year, records 
@@ -126,17 +133,16 @@ def download_asos_data(years=None, stations=None, station_file=None,
     """
 
     
-    # timestamps in UTC to request data for
-    startts = datetime.datetime(year, 1, 1)
-    endts = datetime.datetime(year, 12, 31)
-
     # Write this function
     # stations = get_stations_from_filelist("mystations.txt")
-    
-    download_station(station, startts, endts)
+
+    for station in stations:
+        for year in years:
+            download_station(station, year, verbose=verbose)
     
 if __name__ == "__main__":
-    years = 2021
-    stations = 'PADK'
-    get_asos_data(years, stations)
+    years = [2021, 2022]
+    stations = ['PADK']
+    verbose=True
+    download_asos_data(years, stations, verbose=verbose)
 
