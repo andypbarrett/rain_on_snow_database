@@ -205,7 +205,7 @@ def get_country_list():
 def load_station_metadata():
     """Get coordinates of stations as geopandas DataFrame"""
     df = pd.read_csv(ASOS_METADATA_PATH, header=0, index_col=0)
-    geometry = gpd.points_from_xy(df.lon, df.lat, crs="EPSG:4326")
+    geometry = gpd.points_from_xy(df.longitude, df.latitude, crs="EPSG:4326")
     gdf = gpd.GeoDataFrame(df, geometry=geometry)
     return gdf
 
