@@ -6,7 +6,7 @@ import numpy as np
 import pandas as pd
 import geopandas as gpd
 
-from rain_on_snow.filepath import SURFOBS_RAW_PATH, ASOS_METADATA_PATH
+from ros_database.filepath import SURFOBS_RAW_PATH, ASOS_METADATA_PATH
 
 
 # Update this column list as necessary
