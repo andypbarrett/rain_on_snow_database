@@ -1,4 +1,4 @@
-"""Checks the mesonet and asos created metadata"""
+"""Recreates ASOS metadata file from Iowa Environmental Mesonet metadata holdings"""
 from __future__ import print_function
 
 import requests
@@ -69,7 +69,8 @@ def get_mesonet_network_metadata_json(network, stations=None):
     """Gets a GeoJSON object containing metadata for a mesonet network
 
     N.B. This is used to get richer metadata.  However, the coordinates for the Point objects
-    are only to 4 decimal places and are less precise than those scraped from the html using "format=csv"
+    are only to 4 decimal places and are less precise than those scraped from the html using 
+    'format=csv'
     """
     uri = f"https://mesonet.agron.iastate.edu/geojson/network/{network}.geojson"
     data = urlopen(uri)
@@ -128,22 +129,63 @@ def get_mesonet_network_metadata(network):
     return df
     
     
-def generate_mesonet_metadata():
+def generate_mesonet_metadata(clobber=False):
+    """Generates a new metadata file for the rain on snow observational
+    database from metadata held by Iowa Environmental Mesonet (IEM).  This
+    script is part of the tools to recreate the database or to update
+    metadata files.
 
+    To calls are made to create the final metadata file.  The first
+    scrapes metadata from the IEM network pages for each network in
+    the networks list.  The second is to get the GeoJSON files via an
+    API.  The reason for this is that the GeoJSON files have more
+    metadata fields than the csv's obtained by scraping.  However,
+    GeoJSON POINT object truncates the latitude and longitude values
+    to 4 decimal places.  This affects geolocation accuracy.  So I
+    pull boths sets of metadata, drop the duplicated and truncated
+    fields from the GeoJSON and then join the pandas.DataFrames to
+    create a single metadata DataFrame.
+
+    Keywords
+    :clobber: overwrite existing metadata file
+    """
+
+    if ASOS_METADATA_PATH.exists() and not clobber:
+        print(f"Metadata file found at {ASOS_METADATA_PATH}")
+        print("If you wish to overwrite or update the metadata file use:")
+        print("    python -m ros_database.mesonet.make_mesonet_metadata --clobber")
+        return
+
+    print("Getting metadata from Iowa Environmental Mesonet")
+
+    # Scrape precise lat and lon from IEM network metadata pages
     new_metadata = pd.concat([get_mesonet_network_metadata(network) for network in networks])
     new_metadata = new_metadata.loc[stations]
-
-    json_metadata = pd.concat([get_mesonet_network_metadata_json(network) for network in networks])
-    json_metadata = json_metadata.loc[stations]
-
     new_metadata = new_metadata.rename({'elev': 'elevation',
                                         'lat': 'latitude',
                                         'lon': 'longitude',
                                         'begints': 'record_begins'},
                                        axis=1)
-    print(new_metadata.head())
-    print(json_metadata.head())
+
+    # Get GeoJSON metadata files
+    json_metadata = pd.concat([get_mesonet_network_metadata_json(network) for network in networks])
+    json_metadata = json_metadata.loc[stations]
+    json_metadata = json_metadata.drop(['elevation', 'sname', 'longitude', 'latitude', 'sid'],
+                                       axis=1)
+
+    new_metadata = new_metadata.join(json_metadata)
+
+    print(f"Writing new metadata file to {ASOS_METADATA_PATH}") 
+    new_metadata.to_csv(ASOS_METADATA_PATH)
 
 
 if __name__ == "__main__":
-    generate_mesonet_metadata()
+    import argparse
+
+    
+    parser = argparse.ArgumentParser(description="Recreate or update Rain "
+                                     "on Snow database metadata")
+    parser.add_argument('--clobber', action="store_true",
+                        help="Overwrite existing metadata file set in ASOS_METADATA_PATH")
+    args = parser.parse_args()
+    generate_mesonet_metadata(clobber=args.clobber)
