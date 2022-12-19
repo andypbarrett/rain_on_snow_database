@@ -4,7 +4,7 @@ Test download script to download IOWA mesonet ASOS data
 from __future__ import print_function
 import json
 import time
-import datetime
+import datetime as dt
 from pathlib import Path
 
 from urllib.request import urlopen
@@ -14,7 +14,7 @@ MAX_ATTEMPTS = 6
 # HTTPS here can be problematic for installs that don't have Lets Encrypt CA
 SERVICE = "http://mesonet.agron.iastate.edu/cgi-bin/request/asos.py?"
 
-OUTPATH = Path('.')
+OUTPATH = Path('/projects/AROSS/Observations/Surface/raw_new/')
 
 def get_station_list(network):
     """Returns a list of stations in a network"""
@@ -91,17 +91,31 @@ def write_data(data, outfn):
     return
 
 
-def download_station(station, year, verbose=False):
+def download_station(station, year=None, start="2000-01-01", end="2021-12-31", verbose=False):
     """Download data for a station for a given time period
 
     :station: str station identifier e.g. PADK
     :year: int: year to retrieve.  If year is current year, records up 
-           to current date are retrived.
+           to current date are retrived.  Overrides start and end.  Defaults to start end if None
+    :start: date to start download
+    :end: date to end download or 'now', which downloads up to most recent date 
     :verbose: verbose output
     """
     # timestamps in UTC to request data for
-    start_date = datetime.datetime(year, 1, 1)
-    end_date = datetime.datetime(year, 12, 31)
+    date_now = dt.datetime.now()
+    if year:
+        start_date = dt.datetime(year, 1, 1)
+        end_date = dt.datetime(year, 12, 31)
+    else:
+        start_date = dt.datetime.strptime(start, "%Y-%m-%d")
+        if end == "now":
+            end_date = date_now
+        else:
+            end_date = dt.datetime.strptime(end, "%Y-%m-%d")
+
+    if end_date > date_now:
+        end_date = date_now
+        
     uri = create_download_uri(station, start_date, end_date)
     
     if verbose: print(f"Downloading: {station} "
@@ -116,6 +130,7 @@ def download_station(station, year, verbose=False):
 
 
 def download_asos_data(years=None, stations=None, station_file=None,
+                       start="2000-01-01", end="2021-12-31",
                        update=True, verbose=False):
     """Downloads ASOS records from University of Iowa Mesonet site.
 
@@ -123,6 +138,8 @@ def download_asos_data(years=None, stations=None, station_file=None,
     are retrived up to the date of the request
 
     :years: int, a single year, a list of years to download, or a range of years.
+    :start: date to start downloading: expects YYYY-MM-DD
+    :end: date to end downloading: expects YYYY-MM-DD or 'now'
     :stations: a list of station ids as str, e.g. PABK
     :station_file: file containing a list of stations.  stations is ignored if 
                    a file is provided
@@ -137,12 +154,35 @@ def download_asos_data(years=None, stations=None, station_file=None,
     # stations = get_stations_from_filelist("mystations.txt")
 
     for station in stations:
-        for year in years:
-            download_station(station, year, verbose=verbose)
-    
+        if years:
+            for year in years:
+                download_station(station, year=year, verbose=verbose)
+        else:
+            download_station(station, start=start, end=end, verbose=verbose)
+
+
 if __name__ == "__main__":
-    years = [2021, 2022]
-    stations = ['PADK']
-    verbose=True
-    download_asos_data(years, stations, verbose=verbose)
+    import argparse
+
+    parser = argparse.ArgumentParser(description=(
+        "Downloads ASOS records from University of Iowa Mesonet site.\n"
+        "\n"
+        "Data are downloaded for each station in the stations list for a single year, "
+        "or series of years, or for the date range specified by start and end"
+        ))
+    parser.add_argument("--year", "-y", type=int, nargs='+',
+                        help="Year, or list of years, to download")
+    parser.add_argument("--start", type=str, default="2000-01-01",
+                        help="Start date for records")
+    parser.add_argument("--end", type=str, default="now",
+                        help="End data for records.  Default is today's date")
+    parser.add_argument("stations", type=str, nargs="+",
+                        help="List of stations to get record for")
+    parser.add_argument("--verbose", action="store_true",
+                        help="verbose output")
+
+    args = parser.parse_args()
+
+    download_asos_data(stations=args.stations, start=args.start, end=args.end,
+                       years=args.year, verbose=args.verbose)
 
