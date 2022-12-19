@@ -54,7 +54,7 @@ def create_download_uri(station, start_date, end_date):
 
 def make_outfilename(station, start_date, end_date):
     """Create a filepath for output"""
-    return OUTPATH / f"{station}.{start_date.strftime('%Y')}to{end_date.strftime('%Y')}.txt"
+    return OUTPATH / f"{station}.{start_date.strftime('%Y%m%d')}to{end_date.strftime('%Y%m%d')}.txt"
 
 
 def fetch_data(uri):
