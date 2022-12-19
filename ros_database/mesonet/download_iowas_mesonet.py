@@ -14,6 +14,7 @@ MAX_ATTEMPTS = 6
 # HTTPS here can be problematic for installs that don't have Lets Encrypt CA
 SERVICE = "http://mesonet.agron.iastate.edu/cgi-bin/request/asos.py?"
 
+# TODO Add way to check path has been set.  Notify and set default to .
 OUTPATH = Path('/projects/AROSS/Observations/Surface/raw_new/')
 
 def get_station_list(network):
