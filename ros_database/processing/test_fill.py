@@ -1,0 +1,142 @@
+import numpy as np
+import datetime as dt
+import pandas as pd
+
+
+# Test data
+
+# Set up test dataset for cleaning datasets
+# - Need to figure out how to assert this test
+# Big test
+data = """                    station   tmpf   dwpf    relh   drct  sknt  p01i   alti   mslp wxcodes
+datetime                                                                                  
+2010-10-29 00:10:00    PATK  33.80  32.00   93.03   30.0   3.0  0.01  29.16    NaN  -SN BR
+2010-10-29 00:49:00    PATK  33.80  32.00   93.03    0.0   0.0  0.02  29.15    NaN  -SN BR
+2010-10-29 00:53:00    PATK  33.08  32.00   95.75   30.0   3.0  0.02  29.14  987.4  -SN BR
+2010-10-29 01:14:00    PATK  33.80  32.00   93.03   30.0   3.0  0.01  29.13    NaN  -SN BR
+2010-10-29 01:29:00    PATK  33.80  32.00   93.03    0.0   0.0  0.02  29.13    NaN  -SN BR
+2010-10-29 01:51:00    PATK  33.80  32.00   93.03    0.0   0.0  0.03  29.12    NaN  -SN BR
+2010-10-29 01:53:00    PATK  33.08  32.00   95.75    0.0   0.0  0.03  29.12  986.5  -SN BR
+2010-10-29 02:01:00    PATK  33.80  32.00   93.03    0.0   0.0  0.01  29.11    NaN  -SN BR
+2010-10-29 02:18:00    PATK  33.80  32.00   93.03    0.0   0.0  0.01  29.11    NaN  -SN BR
+2010-10-29 02:26:00    PATK  33.80  32.00   93.03    0.0   0.0  0.02  29.10    NaN  -SN BR
+2010-10-29 02:40:00    PATK  33.80  32.00   93.03    0.0   0.0  0.03  29.10    NaN  -SN BR
+2010-10-29 02:53:00    PATK  33.08  32.00   95.75    0.0   0.0  0.04  29.09  985.5  -SN BR
+2010-10-29 03:11:00    PATK  33.80  32.00   93.03    0.0   0.0  0.01  29.08    NaN  -SN BR
+2010-10-29 03:23:00    PATK  32.00  32.00  100.00    0.0   0.0  0.01  29.07    NaN  -SN BR
+2010-10-29 03:38:00    PATK  33.80  32.00   93.03    0.0   0.0  0.01  29.07    NaN      BR
+2010-10-29 03:53:00    PATK  32.00  32.00  100.00    0.0   0.0  0.01  29.07  984.8      BR
+2010-10-29 04:10:00    PATK  32.00  32.00  100.00    0.0   0.0   NaN  29.07    NaN      BR
+2010-10-29 04:10:00    PATK  32.00  32.00  100.00    0.0   0.0   NaN  29.07    NaN      BR
+2010-10-29 04:10:00    PATK  32.00  32.00  100.00    0.0   0.0   NaN  29.07    NaN      BR
+2010-10-29 04:20:00    PATK  32.00  32.00  100.00    0.0   0.0   NaN  29.07    NaN  -SN BR
+2010-10-29 04:20:00    PATK  32.00  32.00  100.00    0.0   0.0   NaN  29.07    NaN  -SN BR
+2010-10-29 04:20:00    PATK  32.00  32.00  100.00    0.0   0.0   NaN  29.07    NaN  -SN BR
+2010-10-29 04:32:00    PATK  32.00  32.00  100.00    0.0   0.0  0.01  29.07    NaN  -SN BR
+2010-10-29 04:43:00    PATK  32.00  32.00  100.00    0.0   0.0  0.01  29.07    NaN  -SN BR
+2010-10-29 04:43:00    PATK  32.00  32.00  100.00    0.0   0.0   NaN  29.07    NaN  -SN BR
+2010-10-29 04:43:00    PATK  32.00  32.00  100.00    0.0   0.0  0.01  29.07    NaN  -SN BR
+2010-10-29 04:53:00    PATK  33.08  32.00   95.75    0.0   0.0  0.01  29.07  984.7  -SN BR
+2010-10-29 05:31:00    PATK  32.00  30.20   92.97  220.0   3.0  0.02  29.06    NaN  -SN BR
+2010-10-29 05:41:00    PATK  32.00  32.00  100.00  200.0   4.0  0.02  29.06    NaN  -SN BR
+2010-10-29 05:53:00    PATK  32.00  30.92   95.73  200.0   4.0  0.02  29.06  984.4  -SN BR
+2010-10-29 06:07:00    PATK  32.00  30.20   92.97  200.0   4.0   NaN  29.05    NaN  -SN BR
+2010-10-29 06:53:00    PATK  32.00  32.00  100.00  180.0   5.0   NaN  29.04  983.9  -SN BR
+2010-10-29 07:05:00    PATK  32.00  32.00  100.00  190.0   4.0   NaN  29.03    NaN  -SN BR
+2010-10-29 07:53:00    PATK  32.00  30.92   95.73  180.0   6.0   NaN  29.03  983.4      BR
+2010-10-29 08:25:00    PATK  32.00  30.20   92.97  190.0   6.0   NaN  29.02    NaN      BR
+2010-10-29 08:44:00    PATK  32.00  30.20   92.97  190.0   5.0   NaN  29.02    NaN      BR
+2010-10-29 08:53:00    PATK  32.00  30.92   95.73  190.0   5.0   NaN  29.02  983.1      BR
+2010-10-29 08:53:00    PATK  32.00  30.92   95.73  190.0   5.0   NaN  29.02  983.1      BR
+2010-10-29 09:22:00    PATK  32.00  30.20   92.97  190.0   6.0   NaN  29.02    NaN      BR
+2010-10-29 09:53:00    PATK  32.00  30.92   95.73  190.0   7.0   NaN  29.01  983.0      BR
+2010-10-29 10:08:00    PATK  32.00  30.20   92.97  190.0   8.0   NaN  29.02    NaN      BR
+2010-10-29 10:42:00    PATK  30.20  28.40   92.92  190.0   6.0   NaN  29.01    NaN     NaN
+2010-10-29 10:53:00    PATK  30.92  28.04   88.92  180.0   7.0   NaN  29.02  983.1     NaN
+2010-10-29 11:53:00    PATK  30.02  28.04   92.23    0.0   0.0   NaN  29.01  982.8     NaN
+2010-10-29 12:53:00    PATK  28.94  28.04   96.38    0.0   0.0   NaN  29.00  982.4     NaN
+2010-10-29 13:02:00    PATK  28.40  28.40  100.00    0.0   0.0   NaN  28.99    NaN     NaN
+2010-10-29 13:21:00    PATK  28.40  26.60   92.86  170.0   5.0   NaN  28.99    NaN     NaN
+2010-10-29 13:53:00    PATK  28.94  26.06   88.82    0.0   0.0   NaN  28.99  982.2     NaN
+2010-10-29 14:36:00    PATK  28.40  26.60   92.86    0.0   0.0   NaN  28.98    NaN     NaN
+2010-10-29 14:46:00    PATK  28.40  26.60   92.86    0.0   0.0   NaN  28.98    NaN     NaN
+2010-10-29 14:53:00    PATK  28.04  26.06   92.16    0.0   0.0   NaN  28.98  982.0     -SN
+2010-10-29 15:44:00    PATK  28.40  26.60   92.86    0.0   0.0   NaN  28.98    NaN     -SN
+2010-10-29 15:53:00    PATK  28.04  26.06   92.16    0.0   0.0   NaN  28.98  982.0     NaN
+2010-10-29 16:53:00    PATK  28.04  26.06   92.16    0.0   0.0   NaN  28.99  982.0     NaN
+2010-10-29 17:53:00    PATK  28.04  26.06   92.16    0.0   0.0   NaN  28.99  982.2     NaN
+2010-10-29 18:53:00    PATK  26.96  26.06   96.35    0.0   0.0  0.01  28.99  982.3  -SN BR
+2010-10-29 19:53:00    PATK  28.04  26.06   92.16    0.0   0.0   NaN  29.00  982.6  -SN BR
+2010-10-29 20:53:00    PATK  28.94  26.96   92.19    0.0   0.0   NaN  29.01  983.0  -SN BR
+2010-10-29 21:25:00    PATK  28.40  26.60   92.86    0.0   0.0  0.01  29.02    NaN  -SN BR
+2010-10-29 21:53:00    PATK  30.02  26.96   88.22    0.0   0.0  0.01  29.02  983.2     NaN
+2010-10-29 21:55:00    PATK  30.20  26.60   86.28    0.0   0.0   NaN  29.02    NaN     NaN
+2010-10-29 22:53:00    PATK  30.02  28.04   92.23    0.0   0.0   NaN  29.03  983.7  -SN BR
+2010-10-29 23:53:00    PATK  30.02  28.04   92.23  220.0   3.0   NaN  29.04  983.9  -SN BR
+"""
+
+## Ingest test dataset
+
+exit()  # For debugging
+
+# One missing value
+index = [
+    dt.datetime.strptime("2010-10-29 04:43:00", "%Y-%m-%d %H:%M:%S"),
+    dt.datetime.strptime("2010-10-29 04:43:00", "%Y-%m-%d %H:%M:%S"),
+    dt.datetime.strptime("2010-10-29 04:43:00", "%Y-%m-%d %H:%M:%S"),
+]
+columns = "station  tmpf  dwpf   relh drct sknt  p01i   alti  mslp wxcodes".split()
+
+one_missing = pd.DataFrame(
+    [
+        ["PATK", 32.0, 32.0, 100.0, 0.0, 0.0, 0.01, 29.07, np.nan, "-SN BR"],
+        ["PATK", 32.0, 32.0, 100.0, 0.0, 0.0, 0.01, 29.07, np.nan, "-SN BR"],
+        ["PATK", 32.0, 32.0, 100.0, 0.0, 0.0, np.nan, 29.07, np.nan, "-SN BR"],
+    ],
+    index=index, columns=columns)
+
+two_missing = pd.DataFrame(
+    [
+        ["PATK", 32.0, 32.0, 100.0, 0.0, 0.0, np.nan, 29.07, np.nan, "-SN BR"],
+        ["PATK", 32.0, 32.0, 100.0, 0.0, 0.0, 0.01, 29.07, np.nan, "-SN BR"],
+        ["PATK", 32.0, 32.0, 100.0, 0.0, 0.0, np.nan, 29.07, np.nan, "-SN BR"],
+    ],
+    index=index, columns=columns)
+
+diff_missing = pd.DataFrame(
+    [
+        ["PATK", 32.0, 32.0, 100.0, 0.0, 0.0, 0.05, 29.07, np.nan, "-SN BR"],
+        ["PATK", 32.0, 32.0, 100.0, 0.0, 0.0, 0.01, 29.07, np.nan, "-SN BR"],
+        ["PATK", 32.0, 32.0, 100.0, 0.0, 0.0, np.nan, 29.07, np.nan, "-SN BR"],
+    ],
+    index=index, columns=columns)
+
+the_same = pd.DataFrame(
+    [
+        ["PATK", 32.0, 32.0, 100.0, 0.0, 0.0, 0.01, 29.07, np.nan, "-SN BR"],
+        ["PATK", 32.0, 32.0, 100.0, 0.0, 0.0, 0.01, 29.07, np.nan, "-SN BR"],
+        ["PATK", 32.0, 32.0, 100.0, 0.0, 0.0, 0.01, 29.07, np.nan, "-SN BR"],
+    ],
+    index=index, columns=columns)
+
+
+def fill_missing(df):
+    """Fills missing values"""
+    fill_dict = {}
+    for col in df.columns:
+        if df[col].isna().all(): continue
+        unique_values = df[col].dropna().unique()
+        if len(unique_values) > 1:
+            raise Exception(f"More that one unique value for {col} from {unique_values} in row {df.index.unique()}: cannot select fill value") 
+        fill_dict[col] = unique_values[0]
+    return df.fillna(fill_dict)
+
+for df in [one_missing, two_missing, diff_missing, the_same]:
+    if not df.duplicated().all():  # All rows are not the same
+        try:
+            df = fill_missing(df)
+        except Exception as err:
+            print(err)
+    print(df)
+    print(df.drop_duplicates())
+    
