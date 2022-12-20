@@ -2,6 +2,9 @@ import numpy as np
 import datetime as dt
 import pandas as pd
 
+from ros_database.processing.cleaning import fill_missing, remove_duplicate_for_index
+
+
 pd.set_option('display.max_rows', None)
 # Test data
 
@@ -208,18 +211,6 @@ def read_test_data(input_stream):
         values = line[20:].split()
         data.append(values[:9] + [' '.join(values[9:])])
     return pd.DataFrame(data, index=index, columns=columns)
-
-
-def fill_missing(df):
-    """Fills missing values"""
-    fill_dict = {}
-    for col in df.columns:
-        if df[col].isna().all(): continue
-        unique_values = df[col].dropna().unique()
-        if len(unique_values) > 1:
-            raise Exception(f"More that one unique value for {col} from {unique_values} in row {df.index.unique()}: cannot select fill value") 
-        fill_dict[col] = unique_values[0]
-    return df.fillna(fill_dict)
 
 
 def test_one_missing():
