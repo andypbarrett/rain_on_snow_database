@@ -1,4 +1,5 @@
 """Code used to clean raw Iowa mesonet datafiles"""
+import pandas as pd
 
 def fill_missing(df):
     """Fills missing values"""
@@ -19,3 +20,18 @@ def remove_duplicate_for_index(df):
         print(err)
         return None
     return filled_df.drop_duplicates()
+
+
+def remove_duplicated_indices(df):
+    """Removes duplicated records from a DataFrame containing duplicated records
+
+    :df: pandas DataFrame containg duplicated records
+
+    :return: returns a DataFrame containing unique records
+    """
+    unique_indices = df.index.unique()
+    result = []
+    for idx in unique_indices:
+        result.append(remove_duplicate_for_index(df.loc[idx]))
+    return pd.concat(result)
+
