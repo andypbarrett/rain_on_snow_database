@@ -11,7 +11,7 @@ pd.set_option('display.max_rows', None)
 # Set up test dataset for cleaning datasets
 # - Need to figure out how to assert this test
 # Big test
-data = """                    station   tmpf   dwpf    relh   drct  sknt  p01i   alti   mslp wxcodes
+raw_data = """                    station   tmpf   dwpf    relh   drct  sknt  p01i   alti   mslp wxcodes
 datetime                                                                                  
 2010-10-29 00:10:00    PATK  33.80  32.00   93.03   30.0   3.0  0.01  29.16    NaN  -SN BR
 2010-10-29 00:49:00    PATK  33.80  32.00   93.03    0.0   0.0  0.02  29.15    NaN  -SN BR
@@ -211,6 +211,10 @@ def read_test_data(input_stream):
         values = line[20:].split()
         data.append(values[:9] + [' '.join(values[9:])])
     return pd.DataFrame(data, index=index, columns=columns)
+
+
+def load_test_input():
+    return read_test_data(raw_data)
 
 
 def test_one_missing():
