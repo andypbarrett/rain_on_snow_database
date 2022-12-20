@@ -253,10 +253,20 @@ def test_fill_missing():
         print(df.drop_duplicates())
 
 
+def test_remove_duplicates_for_single_index():
+    assert the_same_expected.equals(remove_duplicate_for_index(the_same))
+
+
+def test_remove_duplicates_for_single_index_for_diff():
+    assert the_same_expected.equals(remove_duplicate_for_index(diff_missing))
+
+
 def main():
     test_one_missing()
     test_two_missing()
     test_the_same()
+    test_remove_duplicates_for_single_index()
+    #test_remove_duplicates_for_single_index_for_diff()
     
 
 if __name__ == "__main__":
