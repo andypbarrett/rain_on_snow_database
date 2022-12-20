@@ -210,7 +210,9 @@ def read_test_data(input_stream):
         index.append(dt.datetime.strptime(line[:20].strip(), "%Y-%m-%d %H:%M:%S"))
         values = line[20:].split()
         data.append(values[:9] + [' '.join(values[9:])])
-    return pd.DataFrame(data, index=index, columns=columns)
+    df = pd.DataFrame(data, index=index, columns=columns)
+    df = df.where(df != "NaN")
+    return df
 
 
 def load_test_input():
