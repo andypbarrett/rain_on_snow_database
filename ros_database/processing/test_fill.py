@@ -152,6 +152,13 @@ one_missing = pd.DataFrame(
     ],
     index=index, columns=columns)
 
+one_missing_expected = pd.DataFrame(
+    [
+        ["PATK", 32.0, 32.0, 100.0, 0.0, 0.0, 0.01, 29.07, np.nan, "-SN BR"],
+    ],
+    index=[index[0]], columns=columns)
+
+
 two_missing = pd.DataFrame(
     [
         ["PATK", 32.0, 32.0, 100.0, 0.0, 0.0, np.nan, 29.07, np.nan, "-SN BR"],
@@ -159,6 +166,12 @@ two_missing = pd.DataFrame(
         ["PATK", 32.0, 32.0, 100.0, 0.0, 0.0, np.nan, 29.07, np.nan, "-SN BR"],
     ],
     index=index, columns=columns)
+
+two_missing_expected = pd.DataFrame(
+    [
+        ["PATK", 32.0, 32.0, 100.0, 0.0, 0.0, 0.01, 29.07, np.nan, "-SN BR"],
+    ],
+    index=[index[0]], columns=columns)
 
 diff_missing = pd.DataFrame(
     [
@@ -176,6 +189,12 @@ the_same = pd.DataFrame(
     ],
     index=index, columns=columns)
 
+the_same_expected = pd.DataFrame(
+    [
+        ["PATK", 32.0, 32.0, 100.0, 0.0, 0.0, 0.01, 29.07, np.nan, "-SN BR"],
+    ],
+    index=[index[0]], columns=columns)
+
 
 ## Ingest test dataset
 def read_test_data(input_stream):
@@ -191,7 +210,6 @@ def read_test_data(input_stream):
     return pd.DataFrame(data, index=index, columns=columns)
 
 
-
 def fill_missing(df):
     """Fills missing values"""
     fill_dict = {}
@@ -203,12 +221,53 @@ def fill_missing(df):
         fill_dict[col] = unique_values[0]
     return df.fillna(fill_dict)
 
-for df in [one_missing, two_missing, diff_missing, the_same]:
-    if not df.duplicated().all():  # All rows are not the same
-        try:
-            df = fill_missing(df)
-        except Exception as err:
-            print(err)
-    print(df)
-    print(df.drop_duplicates())
+
+def test_one_missing():
+    """Tests that fill missing does the right thing for DataFrame with one
+       missing value"""
+    result = fill_missing(one_missing).drop_duplicates()
+    assert result.equals(one_missing_expected)
+    return
+
+
+def test_two_missing():
+    """Tests that fill missing does the right thing for DataFrame with one
+       missing value"""
+    result = fill_missing(two_missing).drop_duplicates()
+    assert result.equals(two_missing_expected)
+    return
+
+
+def test_the_same():
+    """Tests that fill missing does the right thing for DataFrame with one
+       missing value"""
+    result = fill_missing(the_same).drop_duplicates()
+    assert result.equals(the_same_expected)
+    return
+
+# Add test for fill_missing to fail
+
+
+def test_fill_missing():
+    """Tests fill_missing function"""
+    # Test for one missing
     
+    for df in [one_missing, two_missing, diff_missing, the_same]:
+        if not df.duplicated().all():  # All rows are not the same
+            try:
+                df = fill_missing(df)
+            except Exception as err:
+                print(err)
+        print(df)
+        print(df.drop_duplicates())
+
+
+def main():
+    test_one_missing()
+    test_two_missing()
+    test_the_same()
+    
+
+if __name__ == "__main__":
+    main()
+
