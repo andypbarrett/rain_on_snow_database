@@ -41,7 +41,8 @@ described below (See Recreating or updating the database).
 - aggregate to create hourly records.
 
 ### Extracting precipitation events
-
+- combine with ims
+- Extract events
 
 
 ## Recreating or updating the database
