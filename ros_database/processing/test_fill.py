@@ -135,23 +135,7 @@ datetime
 2010-10-29 23:53:00    PATK  30.02  28.04   92.23  220.0   3.0   NaN  29.04  983.9  -SN BR"""
 
 
-## Ingest test dataset
-def read_test_data(input_stream):
-    """Generates a test dataframe from a set of lines"""
-    index = []
-    data = []
-    lines = input_stream.split("\n")
-    columns = lines[0].split()
-    for line in lines[2:]:
-        index.append(dt.datetime.strptime(line[:20].strip(), "%Y-%m-%d %H:%M:%S"))
-        values = line[20:].split()
-        data.append(values[:9] + [' '.join(values[9:])])
-    return pd.DataFrame(data, index=index, columns=columns)
-
-
-print(read_test_data(data))
-exit()  # For debugging
-
+## Test data for filling missing data
 # One missing value
 index = [
     dt.datetime.strptime("2010-10-29 04:43:00", "%Y-%m-%d %H:%M:%S"),
@@ -191,6 +175,21 @@ the_same = pd.DataFrame(
         ["PATK", 32.0, 32.0, 100.0, 0.0, 0.0, 0.01, 29.07, np.nan, "-SN BR"],
     ],
     index=index, columns=columns)
+
+
+## Ingest test dataset
+def read_test_data(input_stream):
+    """Generates a test dataframe from a set of lines"""
+    index = []
+    data = []
+    lines = input_stream.split("\n")
+    columns = lines[0].split()
+    for line in lines[2:]:
+        index.append(dt.datetime.strptime(line[:20].strip(), "%Y-%m-%d %H:%M:%S"))
+        values = line[20:].split()
+        data.append(values[:9] + [' '.join(values[9:])])
+    return pd.DataFrame(data, index=index, columns=columns)
+
 
 
 def fill_missing(df):
