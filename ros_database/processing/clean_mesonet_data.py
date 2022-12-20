@@ -10,7 +10,10 @@ import pandas as pd
 from ros_database.processing.surface import (station_paths_in_country,  # not needed if we use new files
                                              load_iowa_mesonet_for_station,
                                              parse_iowa_mesonet_file)
+from ros_database.processing.cleaning import remove_duplicate_records
 from ros_database.filepath import SURFOBS_RAW_PATH
+
+from tests.test_fill import load_test_input
 
 country_list = ['alaska','canada','finland',
                 'greenland', 'iceland', 'norway',
@@ -18,8 +21,20 @@ country_list = ['alaska','canada','finland',
 
 pd.set_option('display.max_rows', None)
 
-def clean_mesonet_data():
-    pass
+def clean_iowa_mesonet_asos_station(station_path):
+    """Cleans raw Iowa Mesonet ASOS data for a single station.  All data files for a single
+    station are combined.  Duplicate data records are removed.  Fields are converted
+    from Imperial (English) units to SI.  Weather codes (WXCODE) for precipitation
+    type are interpretted and assigned to seprate boolean fields.  Data are written
+    to csv files.
+
+    :station_path: Posix type or string type path to station files.
+
+    :returns: None
+    """
+    df = load_test_input()
+    df_cleaned = remove_duplicate_records(df)
+    df_cleaned.to_csv("test_data_cleaned.csv")
 
 
 def count_mesonet_duplicates():
@@ -44,7 +59,7 @@ def count_mesonet_duplicates():
                 # Select row with least missing values
                 # Save indices
                 are_the_same = df.loc[index].duplicated(keep=False).all()
-                if not are_the_same:
+                #if not are_the_same:
                     
             # Find best combination of duplicate rows
             # For each duplicated index, check rows are the same.
@@ -74,4 +89,5 @@ def count_mesonet_duplicates():
 
 
 if __name__ == "__main__":
-    count_mesonet_duplicates()
+    clean_iowa_mesonet_data()
+    #count_mesonet_duplicates()
