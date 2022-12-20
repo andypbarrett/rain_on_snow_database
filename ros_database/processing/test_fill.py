@@ -2,7 +2,7 @@ import numpy as np
 import datetime as dt
 import pandas as pd
 
-
+pd.set_option('display.max_rows', None)
 # Test data
 
 # Set up test dataset for cleaning datasets
@@ -72,11 +72,24 @@ datetime
 2010-10-29 21:53:00    PATK  30.02  26.96   88.22    0.0   0.0  0.01  29.02  983.2     NaN
 2010-10-29 21:55:00    PATK  30.20  26.60   86.28    0.0   0.0   NaN  29.02    NaN     NaN
 2010-10-29 22:53:00    PATK  30.02  28.04   92.23    0.0   0.0   NaN  29.03  983.7  -SN BR
-2010-10-29 23:53:00    PATK  30.02  28.04   92.23  220.0   3.0   NaN  29.04  983.9  -SN BR
-"""
+2010-10-29 23:53:00    PATK  30.02  28.04   92.23  220.0   3.0   NaN  29.04  983.9  -SN BR"""
+
 
 ## Ingest test dataset
+def read_test_data(input_stream):
+    """Generates a test dataframe from a set of lines"""
+    index = []
+    data = []
+    lines = input_stream.split("\n")
+    columns = lines[0].split()
+    for line in lines[2:]:
+        index.append(dt.datetime.strptime(line[:20].strip(), "%Y-%m-%d %H:%M:%S"))
+        values = line[20:].split()
+        data.append(values[:9] + [' '.join(values[9:])])
+    return pd.DataFrame(data, index=index, columns=columns)
 
+
+print(read_test_data(data))
 exit()  # For debugging
 
 # One missing value
