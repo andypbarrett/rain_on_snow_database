@@ -2,7 +2,9 @@ import numpy as np
 import datetime as dt
 import pandas as pd
 
-from ros_database.processing.cleaning import fill_missing, remove_duplicate_for_index
+from ros_database.processing.cleaning import (fill_missing,
+                                              remove_duplicate_for_index,
+                                              remove_duplicate_records)
 
 
 pd.set_option('display.max_rows', None)
@@ -266,6 +268,14 @@ def test_remove_duplicates_for_single_index():
 def test_remove_duplicates_for_single_index_for_diff():
     assert the_same_expected.equals(remove_duplicate_for_index(diff_missing))
 
+def test_remove_duplicate_records():
+    raw_df = read_test_data(raw_data)
+    test_df = read_test_data(no_duplicate_data)
+
+    clean_df = remove_duplicate_records(raw_df)
+
+    assert clean_df.equals(test_df)
+
 
 def main():
     test_one_missing()
@@ -273,6 +283,7 @@ def main():
     test_the_same()
     test_remove_duplicates_for_single_index()
     #test_remove_duplicates_for_single_index_for_diff()
+    test_remove_duplicate_records()
     
 
 if __name__ == "__main__":
