@@ -43,6 +43,11 @@ single station can be processed, annual files are concatenated into
 one file for each station. These are in the
 /PATH/TO/DATABASE/raw/all_stations directory.__
 
+Concatenation is done by `concatenate_station_files.py`
+```
+$ python -m ros_database.processing.concatenate_station_files
+```
+
 ### Data cleaning
 
 ASOS data files hosted by the Iowa Mesonet archive can contain
