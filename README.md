@@ -35,8 +35,37 @@ api but data can be downloaded from their
 Python scripts for downloading raw datafiles and metadata are
 described below (See Recreating or updating the database).
 
+__Originally data for each station were dowloaded in individual files
+for the September to April period, one file for each annual period.
+To make file loading easier, and to future-proof code so that it can
+be run on files in which data for a multi-year period of record for a
+single station can be processed, annual files are concatenated into
+one file for each station. These are in the
+/PATH/TO/DATABASE/raw/all_stations directory.__
+
 ### Data cleaning
-- remove duplcate records
+
+ASOS data files hosted by the Iowa Mesonet archive can contain
+multiple records for the same timestamp.  These duplicates can arise
+from repeated transmission of the same data, or corrected or updated
+transmissions.  For the purposes of data cleaning, we assume that
+valid data values supercede missing data (NaN).
+
+Duplicated records are searched for and removed on a timestamp by
+timestamp basis.  This is necessary because multiple unique timestamps
+may have the same values, and appear to be duplicated.  Consevutive
+duplicated records may be a problem but these are dealt with by a
+different process.  He we focus on removing duplicated time records.
+
+Duplicated timestamps are first identified and copied to a separate
+DataFrame.  Records with unique timestamps are copied to another
+DataFrame.  For each timestamp with duplicate records, the records are
+inspected and missing values (NaN) are filled to maximise data
+retention, then only one of the duplicate records is retained.  These,
+now unique records, are written to a new DataFrame.  This DataFrame is
+then concatenated with the initial DataFrame containing unique records
+and sorted by time index.  This new unique DataFrame is returned.
+
 - decode WXCODE and convert units
 - aggregate to create hourly records.
 
