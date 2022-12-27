@@ -32,5 +32,13 @@ def concatenate_station_files(verbose=False, loadraw=True):
 
 
 if __name__ == "__main__":
-    loadraw = False
-    concatenate_station_files(verbose=True, loadraw=loadraw)
+    import argparse
+
+    parser = argparse.ArgumentParser(description="Concatenate winter period station files "
+                                     "into a single file by station")
+    parser.add_argument("--loadraw", help="Concatenate raw stations.  Default load selected columns",
+                        action="store_true")
+    parser.add_argument("--verbose", "-v", help="verbose", action="store_true")
+    args = parser.parse_args()
+
+    concatenate_station_files(verbose=args.verbose, loadraw=args.loadraw)
