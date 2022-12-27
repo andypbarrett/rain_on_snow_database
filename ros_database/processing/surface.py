@@ -70,14 +70,14 @@ def parse_precip(s):
     return pd.to_numeric(s.where(s != 'T', 0.2/25.4))
 
 
-def read_iowa_mesonet_file(filepath, usecols=USECOLS):
+def read_iowa_mesonet_file(filepath, usecols=None, index_col=0):
     """Reads a station file from Iowa State Mesonet Archive
 
     :filepath: path to data file
 
     :returns: pandas dataframe
     """
-    df = pd.read_csv(filepath, header=0, index_col="valid",
+    df = pd.read_csv(filepath, header=0, index_col=index_col,
                        parse_dates=True, na_values="M",
                        usecols=usecols,)
     df.index.rename('datetime', inplace=True)
