@@ -165,17 +165,21 @@ def get_hourly_obs(df):
     return dfhr
 
 
-def load_iowa_mesonet_for_station(filepath):
+def load_iowa_mesonet_for_station(filepath, loadraw=False):
     '''Loads data for a single station
 
     :filepath: path to directory containing station data
 
     :returns: concatenated pandas dataframe for all files in station
     '''
+    if loadraw:
+        usecols = None
+    else:
+        usecols = USECOLS
     filelist = filepath.glob('*.txt')
     with warnings.catch_warnings():
         warnings.filterwarnings('ignore', message='^Columns.*')
-        df = pd.concat([read_iowa_mesonet_file(fp) for fp in filelist])
+        df = pd.concat([read_iowa_mesonet_file(fp, usecols=usecols) for fp in filelist])
     return df.sort_index()
     
 
