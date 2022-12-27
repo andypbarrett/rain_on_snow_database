@@ -4,7 +4,7 @@ from pathlib import Path
 
 # Get root data path depending on host
 host = socket.gethostname()
-if host == "nsidc-abarrett-442":
+if host == "nsidc-442-abarrett":
     AROSS_PATH = Path("/home/apbarret/Data/Rain_on_snow")  # Needs sorting out
 else:
     AROSS_PATH = Path("/projects/AROSS")
