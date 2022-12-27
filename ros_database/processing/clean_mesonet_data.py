@@ -7,8 +7,7 @@ Convert to SI units
 """
 import pandas as pd
 
-from ros_database.processing.surface import (station_paths_in_country,  # not needed if we use new files
-                                             load_iowa_mesonet_for_station,
+from ros_database.processing.surface import (read_iowa_mesonet_file,
                                              parse_iowa_mesonet_file)
 from ros_database.processing.cleaning import remove_duplicate_records
 from ros_database.filepath import SURFOBS_RAW_PATH
@@ -21,7 +20,7 @@ country_list = ['alaska','canada','finland',
 
 pd.set_option('display.max_rows', None)
 
-def clean_iowa_mesonet_asos_station(station_path, verbose=False):
+def clean_iowa_mesonet_asos_station(station_path, verbose=False, debug=False):
     """Cleans raw Iowa Mesonet ASOS data for a single station.  All data files for a single
     station are combined.  Duplicate data records are removed.  Fields are converted
     from Imperial (English) units to SI.  Weather codes (WXCODE) for precipitation
@@ -32,10 +31,13 @@ def clean_iowa_mesonet_asos_station(station_path, verbose=False):
 
     :returns: None
     """
-    outpath = "test_data_cleaned.csv"
-    
-    if verbose: print(f"    Loading data for {station_path}")
-    df = load_test_input()
+
+    if debug:
+        if verbose: print(f"    Loading data for {station_path}")
+        df = load_test_input()
+        outpath = "test_data_cleaned.csv"
+    else:
+        df = read_iowa_mesonet_file(fp, usecols=None)
     
     if verbose: print("    Removing duplicate records...")
     df_cleaned = remove_duplicate_records(df)
