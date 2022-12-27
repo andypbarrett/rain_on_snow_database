@@ -15,7 +15,7 @@ def get_station_paths():
     """Generates a list of file paths for each station as Path objects"""
     return [path for country in country_list for path in station_paths_in_country(country)]
 
-
+    
 def concatenate_station_files(verbose=False):
     """Main function to concatenate files for all stations"""
     for path in get_station_paths():
