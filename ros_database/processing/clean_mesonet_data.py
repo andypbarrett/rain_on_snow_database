@@ -58,6 +58,7 @@ def clean_mesonet_data(verbose=False, debug=False):
 
     if verbose: print("Cleaning mesonet observation data")
     for fp in filepaths:
+        if verbose: print(f"Processing {fp}")
         clean_iowa_mesonet_asos_station(fp, verbose=verbose, debug=debug)
 
 

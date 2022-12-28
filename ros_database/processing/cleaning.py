@@ -1,28 +1,55 @@
 """Code used to clean raw Iowa mesonet datafiles"""
+import warnings
+
+import numpy as np
 import pandas as pd
 
-def fill_missing(df):
-    """Fills missing values"""
+def fill_missing(df, method_for_multiple="skip"):
+    """Fills missing values for each column in a duplicate record
+
+    :df: pandas.DataFrame
+
+    :method_for_multiple: method to deal with more than one unique value for a
+                          duplicate timestamp.  Default is to "skip" the timestamp.
+                          If 'last' is chosen, then the last value is selected.  This 
+                          assumes that the last value in the sequence is the last
+                          transmission and is an update."""
     fill_dict = {}
     for col in df.columns:
         if df[col].isna().all(): continue
         unique_values = df[col].dropna().unique()
         if len(unique_values) > 1:
-            raise Exception(f"More that one unique value for {col} from {unique_values} in row {df.index.unique()}: cannot select fill value") 
-        fill_dict[col] = unique_values[0]
+            if method_for_multiple == "last":
+                fill_dict[col] = unique_values[-1]
+                warnings.warn(f"More that one unique value for {col} "
+                              f"from {unique_values} in row {df.index.unique()}: "
+                              "selecting last value")
+            else:
+                fill_dict[col] = np.nan
+                warnings.warn(f"More that one unique value for {col} "
+                              f"from {unique_values} in row {df.index.unique()}: "
+                              "cannot select fill value")
+            df[col] = np.nan
+        else:
+            fill_dict[col] = unique_values[0]
     return df.fillna(fill_dict)
 
 
 def remove_duplicate_for_index(df):
-    try:
-        filled_df = fill_missing(df)
-    except Exception as err:
-        print(err)
-        return None
+    #try:
+    filled_df = fill_missing(df)
+    #except Exception as err:
+    #    print(err)
+    #    return None
     return filled_df.drop_duplicates()
 
 
-def remove_duplicated_indices(df):
+def check_all_none(list_of_dataframes):
+    """Check if all members of lis are None"""
+    return all([df is None for df in list_of_dataframes])
+
+
+def remove_duplicated_indices(df, debug=False):
     """Removes duplicated records from a DataFrame containing duplicated records
 
     :df: pandas DataFrame containg duplicated records
@@ -33,6 +60,8 @@ def remove_duplicated_indices(df):
     result = []
     for idx in unique_indices:
         result.append(remove_duplicate_for_index(df.loc[idx]))
+    if check_all_none(result):
+        return None
     return pd.concat(result)
 
 
