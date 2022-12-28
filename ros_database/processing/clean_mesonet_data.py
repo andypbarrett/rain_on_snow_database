@@ -62,7 +62,13 @@ def clean_mesonet_data(verbose=False, debug=False):
 
 
 if __name__ == "__main__":
+    import argparse
 
-    verbose=True
-    debug = False
-    clean_mesonet_data(verbose=verbose, debug=debug)
+    parser = argparse.ArgumentParser(description="For each station in database, removes "
+                                     "duplicate records, parses records and converts units")
+    parser.add_argument("--verbose", help="verbose output", action="store_true")
+    parser.add_argument("--debug", help="run debug and test file", action="store_true")
+
+    args = parser.parse_args()
+    print(args)
+    clean_mesonet_data(verbose=args.verbose, debug=args.debug)
