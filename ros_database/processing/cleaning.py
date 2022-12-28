@@ -66,9 +66,13 @@ def remove_duplicate_records(df):
     :returns: pandas.DataFrame with unique date sorted indices"""
     # split into two DataFrames with duplicated indices and unique indices
     isduplicated = df.index.duplicated(keep=False)
+    nduplicated = sum(isduplicated)
+    if nduplicated == 0:
+        return df
+    
     df_duplic = df[isduplicated]
     df_unique = df[~isduplicated]
-    
+
     # Remove duplicate records
     df_removed = remove_duplicated_indices(df_duplic)
     
