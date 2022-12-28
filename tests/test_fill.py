@@ -2,10 +2,13 @@ import numpy as np
 import datetime as dt
 import pandas as pd
 
+import warnings
+
 from ros_database.processing.cleaning import (fill_missing,
                                               remove_duplicate_for_index,
                                               remove_duplicate_records)
 
+warnings.simplefilter("ignore")
 
 pd.set_option('display.max_rows', None)
 # Test data
@@ -196,6 +199,11 @@ diff_missing = pd.DataFrame(
         ["PATK", 32.0, 32.0, 100.0, 0.0, 0.0, np.nan, 29.07, np.nan, "-SN BR"],
     ],
     index=index, columns=columns)
+diff_missing_expected = pd.DataFrame(
+    [
+        ["PATK", 32.0, 32.0, 100.0, 0.0, 0.0, 0.01, 29.07, np.nan, "-SN BR"],
+    ],
+    index=index, columns=columns)
 
 the_same = pd.DataFrame(
     [
@@ -278,7 +286,7 @@ def test_remove_duplicates_for_single_index():
 
 
 def test_remove_duplicates_for_single_index_for_diff():
-    assert the_same_expected.equals(remove_duplicate_for_index(diff_missing))
+    assert diff_missing_expected.equals(remove_duplicate_for_index(diff_missing))
 
 def test_remove_duplicate_records():
     raw_df = read_test_data(raw_data)
