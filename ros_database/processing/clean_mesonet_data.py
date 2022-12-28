@@ -70,5 +70,4 @@ if __name__ == "__main__":
     parser.add_argument("--debug", help="run debug and test file", action="store_true")
 
     args = parser.parse_args()
-    print(args)
     clean_mesonet_data(verbose=args.verbose, debug=args.debug)
