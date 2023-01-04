@@ -35,8 +35,8 @@ df_with_trace = pd.DataFrame(
 
 df_with_trace_expected = pd.DataFrame(
     {'station': ['BBXY', 'BBXY', 'BBXY', 'BBXY', 'BBXY'],
-     'tmpf': [np.nan, np.nan, -40.0, -17.8, 0.0],
-     'dwpf': [np.nan, np.nan, -40.0, -17.8, 0.0],
+     't2m': [np.nan, np.nan, -40.0, -17.8, 0.0],
+     'd2m': [np.nan, np.nan, -40.0, -17.8, 0.0],
      'relh': [np.nan, np.nan, 0., 45., 100.],
      'drct': [np.nan, np.nan, 0., 359, 90],
      'sknt': [np.nan, np.nan, 0.00, 0.51, 2.57],
@@ -66,8 +66,8 @@ df_zero_precip = pd.DataFrame(
 
 df_zero_precip_expected = pd.DataFrame(
     {'station': ['BBXY', 'BBXY', 'BBXY', 'BBXY', 'BBXY'],
-     'tmpf': [np.nan, np.nan, -40.0, -17.8, 0.0],
-     'dwpf': [np.nan, np.nan, -40.0, -17.8, 0.0],
+     't2m': [np.nan, np.nan, -40.0, -17.8, 0.0],
+     'd2m': [np.nan, np.nan, -40.0, -17.8, 0.0],
      'relh': [np.nan, np.nan, 0., 45., 100.],
      'drct': [np.nan, np.nan, 0., 359, 90],
      'sknt': [np.nan, np.nan, 0.00, 0.51, 2.57],
@@ -98,8 +98,8 @@ df_good = pd.DataFrame(
 
 df_good_expected = pd.DataFrame(
     {'station': ['BBXY', 'BBXY', 'BBXY', 'BBXY', 'BBXY'],
-     'tmpf': [np.nan, np.nan, -40.0, -17.8, 0.0],
-     'dwpf': [np.nan, np.nan, -40.0, -17.8, 0.0],
+     't2m': [np.nan, np.nan, -40.0, -17.8, 0.0],
+     'd2m': [np.nan, np.nan, -40.0, -17.8, 0.0],
      'relh': [np.nan, np.nan, 0., 45., 100.],
      'drct': [np.nan, np.nan, 0., 359, 90],
      'sknt': [np.nan, np.nan, 0.00, 0.51, 2.57],
@@ -134,6 +134,12 @@ def test_parse_precip_zero():
     assert (parse_precip(df_with_trace["p01i"]).round(6).values == expected_arr).any(), f"Expected {df_with_trace_expected['p01i'].values}, got {expected_arr}"
 
 
+def test_parse_dataframe_trace():
+    """Test correct parsing of df_with_trace"""
+    df_parse = parse_iowa_mesonet_file(df_with_trace)
+    assert df_parse["tmp"].equals(df_with_trace_expected["tmp"])
+    
+    
 def main():
     test_parse_precip_dtype()
     test_parse_precip_trace()
