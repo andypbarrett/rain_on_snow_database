@@ -27,12 +27,8 @@ def clean_iowa_mesonet_asos_station(station_path, verbose=False, debug=False):
     """
 
     if verbose: print(f"    Loading data for {station_path}")
-    if debug:
-        df = load_test_input()
-        outpath = "test_data_cleaned.csv"
-    else:
-        df = read_iowa_mesonet_file(station_path, usecols=None)
-        outpath = f"{SURFOBS_CLEAN_PATH / station_path.stem}.clean.csv"
+    df = read_iowa_mesonet_file(station_path, usecols=None)
+    outpath = f"{SURFOBS_CLEAN_PATH / station_path.stem}.clean.csv"
 
     if verbose: print("    Removing duplicate records...")
     df_cleaned = remove_duplicate_records(df)
