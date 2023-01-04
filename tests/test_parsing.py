@@ -21,85 +21,95 @@ index = pd.to_datetime(['2015-11-01 01:53:00',
     
 df_with_trace = pd.DataFrame(
     {'station': ['BBXY', 'BBXY', 'BBXY', 'BBXY', 'BBXY'],
-     'tmpf': [np.nan, '', -40, 0., 32],
-     'dwpf': [np.nan, '', -40, 0., 32],
-     'relh': [np.nan, '', 0., 45., 100.],
-     'drct': [np.nan, '', 0., 359, 90],
-     'sknt': [np.nan, '', 0., 1., 5.],
+     'tmpf': [np.nan, np.nan, -40, 0., 32],
+     'dwpf': [np.nan, np.nan, -40, 0., 32],
+     'relh': [np.nan, np.nan, 0., 45., 100.],
+     'drct': [np.nan, np.nan, 0., 359, 90],
+     'sknt': [np.nan, np.nan, 0., 1., 5.],
      'p01i': [np.nan, '', 'T', '0.03', '0.05'],
-     'alti': [np.nan, '', 24., 30., 7.],
-     'mslp': [np.nan, '', 1013., 1005., 900.],
+     'alti': [np.nan, np.nan, 24., 30., 7.],
+     'mslp': [np.nan, np.nan, 1013., 1005., 900.],
      'wxcodes': ['', 'RA', 'FZRA', 'SN', 'RASN'],
     }, index=index
 )
 
 df_with_trace_expected = pd.DataFrame(
     {'station': ['BBXY', 'BBXY', 'BBXY', 'BBXY', 'BBXY'],
-     'tmpf': [np.nan, np.nan, -40, 0., 32],
-     'dwpf': [np.nan, np.nan, -40, 0., 32],
+     'tmpf': [np.nan, np.nan, -40.0, -17.8, 0.0],
+     'dwpf': [np.nan, np.nan, -40.0, -17.8, 0.0],
      'relh': [np.nan, np.nan, 0., 45., 100.],
      'drct': [np.nan, np.nan, 0., 359, 90],
-     'sknt': [np.nan, np.nan, 0., 1., 5.],
+     'sknt': [np.nan, np.nan, 0.00, 0.51, 2.57],
      'p01i': [np.nan, np.nan, 0.007874, 0.03, 0.05],
      'alti': [np.nan, np.nan, 24., 30., 7.],
      'mslp': [np.nan, np.nan, 1013., 1005., 900.],
-     'wxcodes': ['', 'RA', 'FZRA', 'SN', 'RASN'],
+     'UP': [False, False, False, False, False],
+     'RA': [False, True, False, False, True],
+     'FZRA': [False, False, True, False, False],
+     'SOLID': [False, False, False, True, True],
     }, index=index
 )
 
 df_zero_precip = pd.DataFrame(
     {'station': ['BBXY', 'BBXY', 'BBXY', 'BBXY', 'BBXY'],
-     'tmpf': [np.nan, '', -40, 0., 32],
-     'dwpf': [np.nan, '', -40, 0., 32],
-     'relh': [np.nan, '', 0., 45., 100.],
-     'drct': [np.nan, '', 0., 359, 90],
-     'sknt': [np.nan, '', 0., 1., 5.],
+     'tmpf': [np.nan, np.nan, -40, 0., 32],
+     'dwpf': [np.nan, np.nan, -40, 0., 32],
+     'relh': [np.nan, np.nan, 0., 45., 100.],
+     'drct': [np.nan, np.nan, 0., 359, 90],
+     'sknt': [np.nan, np.nan, 0., 1., 5.],
      'p01i': [np.nan, '', 0., 0., 0.],
-     'alti': [np.nan, '', 24., 30., 7.],
-     'mslp': [np.nan, '', 1013., 1005., 900.],
+     'alti': [np.nan, np.nan, 24., 30., 7.],
+     'mslp': [np.nan, np.nan, 1013., 1005., 900.],
      'wxcodes': ['', 'RA', 'FZRA', 'SN', 'RASN'],
     }, index=index
 )
 
 df_zero_precip_expected = pd.DataFrame(
     {'station': ['BBXY', 'BBXY', 'BBXY', 'BBXY', 'BBXY'],
-     'tmpf': [np.nan, np.nan, -40, 0., 32],
-     'dwpf': [np.nan, np.nan, -40, 0., 32],
+     'tmpf': [np.nan, np.nan, -40.0, -17.8, 0.0],
+     'dwpf': [np.nan, np.nan, -40.0, -17.8, 0.0],
      'relh': [np.nan, np.nan, 0., 45., 100.],
      'drct': [np.nan, np.nan, 0., 359, 90],
-     'sknt': [np.nan, np.nan, 0., 1., 5.],
+     'sknt': [np.nan, np.nan, 0.00, 0.51, 2.57],
      'p01i': [np.nan, np.nan, np.nan, np.nan, np.nan],
      'alti': [np.nan, np.nan, 24., 30., 7.],
      'mslp': [np.nan, np.nan, 1013., 1005., 900.],
+     'UP': [False, False, False, False, False],
+     'RA': [False, True, False, False, True],
+     'FZRA': [False, False, True, False, False],
+     'SOLID': [False, False, False, True, True],
      'wxcodes': ['', 'RA', 'FZRA', 'SN', 'RASN'],
     }, index=index
 )
 
 df_good = pd.DataFrame(
     {'station': ['BBXY', 'BBXY', 'BBXY', 'BBXY', 'BBXY'],
-     'tmpf': [np.nan, '', -40, 0., 32],
-     'dwpf': [np.nan, '', -40, 0., 32],
-     'relh': [np.nan, '', 0., 45., 100.],
-     'drct': [np.nan, '', 0., 359, 90],
-     'sknt': [np.nan, '', 0., 1., 5.],
+     'tmpf': [np.nan, np.nan, -40, 0., 32],
+     'dwpf': [np.nan, np.nan, -40, 0., 32],
+     'relh': [np.nan, np.nan, 0., 45., 100.],
+     'drct': [np.nan, np.nan, 0., 359, 90],
+     'sknt': [np.nan, np.nan, 0., 1., 5.],
      'p01i': [np.nan, '', 0., 0.03, 0.05],
-     'alti': [np.nan, '', 24., 30., 7.],
-     'mslp': [np.nan, '', 1013., 1005., 900.],
+     'alti': [np.nan, np.nan, 24., 30., 7.],
+     'mslp': [np.nan, np.nan, 1013., 1005., 900.],
      'wxcodes': ['', 'RA', 'FZRA', 'SN', 'RASN'],
     }, index=index
 )
 
 df_good_expected = pd.DataFrame(
     {'station': ['BBXY', 'BBXY', 'BBXY', 'BBXY', 'BBXY'],
-     'tmpf': [np.nan, np.nan, -40, 0., 32],
-     'dwpf': [np.nan, np.nan, -40, 0., 32],
+     'tmpf': [np.nan, np.nan, -40.0, -17.8, 0.0],
+     'dwpf': [np.nan, np.nan, -40.0, -17.8, 0.0],
      'relh': [np.nan, np.nan, 0., 45., 100.],
      'drct': [np.nan, np.nan, 0., 359, 90],
-     'sknt': [np.nan, np.nan, 0., 1., 5.],
+     'sknt': [np.nan, np.nan, 0.00, 0.51, 2.57],
      'p01i': [np.nan, np.nan, 0., 0.03, 0.05],
      'alti': [np.nan, np.nan, 24., 30., 7.],
      'mslp': [np.nan, np.nan, 1013., 1005., 900.],
-     'wxcodes': ['', 'RA', 'FZRA', 'SN', 'RASN'],
+     'UP': [False, False, False, False, False],
+     'RA': [False, True, False, False, True],
+     'FZRA': [False, False, True, False, False],
+     'SOLID': [False, False, False, True, True],
     }, index=index
 )
 
@@ -114,8 +124,21 @@ def test_parse_precip_trace():
     """Tests that parse_precip returns expected response
 
     Add round(6) so match is found to 6 sf"""
-    assert parse_precip(df_with_trace["p01i"]).round(6).equals(df_with_trace_expected["p01i"].round(6)), f"Expected {df_with_trace_expected['p01i'].values}, got {parse_precip(df_with_trace['p01i'])}"
-    
-    
+    expected_arr = [np.nan, np.nan, 0.007874, 0.03, 0.05]
+    assert (parse_precip(df_with_trace["p01i"]).round(6).values == expected_arr).any(), f"Expected {df_with_trace_expected['p01i'].values}, got {expected_arr}"
+
+
+def test_parse_precip_zero():
+    """Checks that test dataframe returns the same"""
+    expected_arr = [np.nan, np.nan, 0.0, 0.0, 0.0]
+    assert (parse_precip(df_with_trace["p01i"]).round(6).values == expected_arr).any(), f"Expected {df_with_trace_expected['p01i'].values}, got {expected_arr}"
+
+
 def main():
     test_parse_precip_dtype()
+    test_parse_precip_trace()
+    test_parse_precip_zero()
+
+
+if __name__ == "__main__":
+    main()
