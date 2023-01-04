@@ -68,7 +68,7 @@ df_zero_precip_expected = pd.DataFrame(
      'relh': [np.nan, np.nan, 0., 45., 100.],
      'drct': [np.nan, np.nan, 0., 359, 90],
      'sknt': [np.nan, np.nan, 0., 1., 5.],
-     'p01i': [np.nan, np.nan, 0., 0., 0.],
+     'p01i': [np.nan, np.nan, np.nan, np.nan, np.nan],
      'alti': [np.nan, np.nan, 24., 30., 7.],
      'mslp': [np.nan, np.nan, 1013., 1005., 900.],
      'wxcodes': ['', 'RA', 'FZRA', 'SN', 'RASN'],
