@@ -12,7 +12,6 @@ from ros_database.processing.surface import (read_iowa_mesonet_file,
 from ros_database.processing.cleaning import remove_duplicate_records
 from ros_database.filepath import SURFOBS_CONCAT_PATH, SURFOBS_CLEAN_PATH
 
-from tests.test_fill import load_test_input
 
 def clean_iowa_mesonet_asos_station(station_path, verbose=False, debug=False):
     """Cleans raw Iowa Mesonet ASOS data for a single station.  All data files for a single
