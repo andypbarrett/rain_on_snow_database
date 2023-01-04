@@ -84,6 +84,28 @@ def read_iowa_mesonet_file(filepath, usecols=None, index_col=0):
     return df
 
 
+def check_precip_all_zero(s):
+    """Check if all elements in precipitation Series are all zero.  Ignores NaN
+
+    :s: pandas Series
+
+    :returns: Boolean
+    """
+    return (s.dropna() == 0.).all()
+
+
+def parse_all_zero_precip(s):
+    """If p01i (1 hr precipitation intensity) are all zero, replace with NaN
+
+    :s: pandas.Series containing p01i values
+
+    :returns: pandas.Series containing all NaN, or s
+    """
+    if check_precip_all_zero(s):
+        s[:] = np.nan
+    return s
+
+
 def parse_iowa_mesonet_file(df):
     """Converts units to SI and adds columns for liquid, mixed and solid precipitation.
 
