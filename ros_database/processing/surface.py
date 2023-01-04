@@ -128,7 +128,6 @@ def parse_iowa_mesonet_file(df):
     """
     df['p01i'] = parse_precip(df["p01i"])  # Set Trace to ~0.01 inches 
 
-    print("here")
     df.loc[: , "p01i"] = parse_all_zero_precip(df["p01i"])  # if all zeros change to NaN
     
     # Unit conversions

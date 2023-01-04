@@ -196,7 +196,6 @@ def main():
     test_parse_not_all_zero_precip()
     test_parse_dataframe_trace()
     test_parse_dataframe_good()
-    print("testing df_zero")
     test_parse_dataframe_zero()
 
 
