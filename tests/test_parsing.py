@@ -148,12 +148,25 @@ def test_parse_dataframe_trace():
     assert df_parse["SOLID"].equals(df_with_trace_expected["SOLID"]), "Parsing df_with_trace failed for SOLID"
 
     
+def test_parse_dataframe_zero():
+    """Test correct parsing of df_zero_precip"""
+    df_parse = parse_iowa_mesonet_file(df_zero_precip)
+    assert df_parse["t2m"].equals(df_zero_precip_expected["t2m"]), "Parsing df_zero_precip failed for t2m"
+    assert df_parse["d2m"].equals(df_zero_precip_expected["d2m"]), "Parsing df_zero_precip failed for d2m"
+    assert df_parse["p01i"].equals(df_zero_precip_expected["p01i"]), "Parsing df_zero_precip failed for p01i"
+    assert df_parse["UP"].equals(df_zero_precip_expected["UP"]), "Parsing df_zero_precip failed for UP"
+    assert df_parse["RA"].equals(df_zero_precip_expected["RA"]), "Parsing df_zero_precip failed for RA"
+    assert df_parse["FZRA"].equals(df_zero_precip_expected["FZRA"]), "Parsing df_zero_precip failed for FZRA"
+    assert df_parse["SOLID"].equals(df_zero_precip_expected["SOLID"]), "Parsing df_zero_precip failed for SOLID"
+
+
 def main():
     test_parse_precip_dtype()
     test_parse_precip_trace()
     test_parse_precip_zero()
     test_parse_precip_dtype()
     test_parse_dataframe_trace()
+    test_parse_dataframe_zero()
 
 
 if __name__ == "__main__":
