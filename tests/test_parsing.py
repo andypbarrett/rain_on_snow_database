@@ -61,6 +61,20 @@ df_zero_precip = pd.DataFrame(
     }, index=index
 )
 
+df_zero_precip_expected = pd.DataFrame(
+    {'station': ['BBXY', 'BBXY', 'BBXY', 'BBXY', 'BBXY'],
+     'tmpf': [np.nan, np.nan, -40, 0., 32],
+     'dwpf': [np.nan, np.nan, -40, 0., 32],
+     'relh': [np.nan, np.nan, 0., 45., 100.],
+     'drct': [np.nan, np.nan, 0., 359, 90],
+     'sknt': [np.nan, np.nan, 0., 1., 5.],
+     'p01i': [np.nan, np.nan, 0., 0., 0.],
+     'alti': [np.nan, np.nan, 24., 30., 7.],
+     'mslp': [np.nan, np.nan, 1013., 1005., 900.],
+     'wxcodes': ['', 'RA', 'FZRA', 'SN', 'RASN'],
+    }, index=index
+)
+
 df_good = pd.DataFrame(
     {'station': ['BBXY', 'BBXY', 'BBXY', 'BBXY', 'BBXY'],
      'tmpf': [np.nan, '', -40, 0., 32],
@@ -75,6 +89,19 @@ df_good = pd.DataFrame(
     }, index=index
 )
 
+df_good_expected = pd.DataFrame(
+    {'station': ['BBXY', 'BBXY', 'BBXY', 'BBXY', 'BBXY'],
+     'tmpf': [np.nan, np.nan, -40, 0., 32],
+     'dwpf': [np.nan, np.nan, -40, 0., 32],
+     'relh': [np.nan, np.nan, 0., 45., 100.],
+     'drct': [np.nan, np.nan, 0., 359, 90],
+     'sknt': [np.nan, np.nan, 0., 1., 5.],
+     'p01i': [np.nan, np.nan, 0., 0.03, 0.05],
+     'alti': [np.nan, np.nan, 24., 30., 7.],
+     'mslp': [np.nan, np.nan, 1013., 1005., 900.],
+     'wxcodes': ['', 'RA', 'FZRA', 'SN', 'RASN'],
+    }, index=index
+)
 
 def test_parse_precip_dtype():
     """Checks that parse precip returns float64"""
