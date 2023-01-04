@@ -101,9 +101,10 @@ def parse_all_zero_precip(s):
 
     :returns: pandas.Series containing all NaN, or s
     """
-    if check_precip_all_zero(s):
-        s[:] = np.nan
-    return s
+    sc = s.copy()
+    if check_precip_all_zero(sc):
+        sc.loc[:] = np.nan
+    return sc.values
 
 
 def parse_iowa_mesonet_file(df):
@@ -126,6 +127,9 @@ def parse_iowa_mesonet_file(df):
     - tmpf, dwpf, sknt, p01i and wxcodes are dropped
     """
     df['p01i'] = parse_precip(df["p01i"])  # Set Trace to ~0.01 inches 
+
+    print("here")
+    df.loc[: , "p01i"] = parse_all_zero_precip(df["p01i"])  # if all zeros change to NaN
     
     # Unit conversions
     df['t2m'] = fahr2cel(df['tmpf']).round(1)  # keep 1 sig fig
