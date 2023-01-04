@@ -119,7 +119,7 @@ def parse_iowa_mesonet_file(df):
     df['uwnd'] = u_wind(df.wspd, df.drct)
     df['vwnd'] = v_wind(df.wspd, df.drct)
     
-    df = df.drop(['tmpf', 'dwpf', 'sknt', 'p01i', 'wxcodes'], axis=1)
+    df = df.drop(['tmpf', 'dwpf', 'sknt', 'wxcodes'], axis=1)
 
     return df
 
