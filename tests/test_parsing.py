@@ -125,25 +125,35 @@ def test_parse_precip_trace():
 
     Add round(6) so match is found to 6 sf"""
     expected_arr = [np.nan, np.nan, 0.007874, 0.03, 0.05]
-    assert (parse_precip(df_with_trace["p01i"]).round(6).values == expected_arr).any(), f"Expected {df_with_trace_expected['p01i'].values}, got {expected_arr}"
+    parse_arr = parse_precip(df_with_trace["p01i"]).round(6).values
+    assert (parse_arr == expected_arr).any(), f"Expected {expected_arr}, got {parse_arr}"
 
 
 def test_parse_precip_zero():
     """Checks that test dataframe returns the same"""
     expected_arr = [np.nan, np.nan, 0.0, 0.0, 0.0]
-    assert (parse_precip(df_with_trace["p01i"]).round(6).values == expected_arr).any(), f"Expected {df_with_trace_expected['p01i'].values}, got {expected_arr}"
+    parse_arr = parse_precip(df_zero_precip["p01i"]).round(6).values
+    assert (parse_arr == expected_arr).any(), f"Expected {expected_arr}, got {parse_arr}"
 
 
 def test_parse_dataframe_trace():
     """Test correct parsing of df_with_trace"""
     df_parse = parse_iowa_mesonet_file(df_with_trace)
-    assert df_parse["tmp"].equals(df_with_trace_expected["tmp"])
-    
+    assert df_parse["t2m"].equals(df_with_trace_expected["t2m"]), "Parsing df_with_trace failed for t2m"
+    assert df_parse["d2m"].equals(df_with_trace_expected["d2m"]), "Parsing df_with_trace failed for d2m"
+    assert df_parse["p01i"].equals(df_with_trace_expected["p01i"]), "Parsing df_with_trace failed for p01i"
+    assert df_parse["UP"].equals(df_with_trace_expected["UP"]), "Parsing df_with_trace failed for UP"
+    assert df_parse["RA"].equals(df_with_trace_expected["RA"]), "Parsing df_with_trace failed for RA"
+    assert df_parse["FZRA"].equals(df_with_trace_expected["FZRA"]), "Parsing df_with_trace failed for FZRA"
+    assert df_parse["SOLID"].equals(df_with_trace_expected["FZRA"]), "Parsing df_with_trace failed for FZRA"
+
     
 def main():
     test_parse_precip_dtype()
     test_parse_precip_trace()
     test_parse_precip_zero()
+    test_parse_precip_dtype()
+    test_parse_dataframe_trace()
 
 
 if __name__ == "__main__":
