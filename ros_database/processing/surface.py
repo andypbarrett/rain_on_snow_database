@@ -109,7 +109,7 @@ def parse_iowa_mesonet_file(df):
     df['t2m'] = fahr2cel(df['tmpf']).round(1)  # keep 1 sig fig
     df['d2m'] = fahr2cel(df['dwpf']).round(1)  # --ditto--
     df['wspd'] = knots2mps(df['sknt'])
-    df['p01'] = inches2mm(df['p01i']).round(1)
+    df['p01i'] = inches2mm(df['p01i']).round(1)
 
     df['UP'] = df.wxcodes.str.contains('UP')  # matches Unknown Precipitation
     df['RA'] = df.wxcodes.str.contains('(?<!FZ)RA')  # matchrain but not freezing rain
