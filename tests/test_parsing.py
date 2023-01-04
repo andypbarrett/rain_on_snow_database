@@ -177,12 +177,12 @@ def test_parse_dataframe_good():
 def test_parse_all_zero_precip():
     test_df = pd.Series([np.nan, 0.0, 0.0])
     result = parse_all_zero_precip(test_df)
-    assert  result.isna().all(), f"test_parse_all_zero_precip: expected all NaNs, got {result}"
+    assert  np.isnan(result).all(), f"test_parse_all_zero_precip: expected all NaNs, got {result}"
 
     
 def test_parse_not_all_zero_precip():
     test_df = pd.Series([np.nan, 1.0, 0.0])
-    result = parse_all_zero_precip(test_df).isna().values
+    result = np.isnan(parse_all_zero_precip(test_df))
     expected = [True, False, False]
     assert  (result == expected).all(), f"test_parse_not_all_zero_precip: expected {expected}, got {result}"
 
@@ -196,6 +196,7 @@ def main():
     test_parse_not_all_zero_precip()
     test_parse_dataframe_trace()
     test_parse_dataframe_good()
+    print("testing df_zero")
     test_parse_dataframe_zero()
 
 
