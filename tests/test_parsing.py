@@ -2,7 +2,9 @@
 import numpy as np
 import pandas as pd
 
-from ros_database.processing.surface import parse_iowa_mesonet_file, parse_precip
+from ros_database.processing.surface import (parse_iowa_mesonet_file,
+                                             parse_precip,
+                                             parse_all_zero_precip)
 
 """
 TODO:
@@ -172,11 +174,26 @@ def test_parse_dataframe_good():
     assert df_parse["SOLID"].equals(df_good_expected["SOLID"]), "Parsing df_good failed for SOLID"
 
 
+def test_parse_all_zero_precip():
+    test_df = pd.Series([np.nan, 0.0, 0.0])
+    result = parse_all_zero_precip(test_df)
+    assert  result.isna().all(), f"test_parse_all_zero_precip: expected all NaNs, got {result}"
+
+    
+def test_parse_not_all_zero_precip():
+    test_df = pd.Series([np.nan, 1.0, 0.0])
+    result = parse_all_zero_precip(test_df).isna().values
+    expected = [True, False, False]
+    assert  (result == expected).all(), f"test_parse_not_all_zero_precip: expected {expected}, got {result}"
+
+    
 def main():
     test_parse_precip_dtype()
     test_parse_precip_trace()
     test_parse_precip_zero()
     test_parse_precip_dtype()
+    test_parse_all_zero_precip()
+    test_parse_not_all_zero_precip()
     test_parse_dataframe_trace()
     test_parse_dataframe_good()
     test_parse_dataframe_zero()
