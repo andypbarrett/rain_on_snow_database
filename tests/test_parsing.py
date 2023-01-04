@@ -145,7 +145,7 @@ def test_parse_dataframe_trace():
     assert df_parse["UP"].equals(df_with_trace_expected["UP"]), "Parsing df_with_trace failed for UP"
     assert df_parse["RA"].equals(df_with_trace_expected["RA"]), "Parsing df_with_trace failed for RA"
     assert df_parse["FZRA"].equals(df_with_trace_expected["FZRA"]), "Parsing df_with_trace failed for FZRA"
-    assert df_parse["SOLID"].equals(df_with_trace_expected["FZRA"]), "Parsing df_with_trace failed for FZRA"
+    assert df_parse["SOLID"].equals(df_with_trace_expected["SOLID"]), "Parsing df_with_trace failed for SOLID"
 
     
 def main():
