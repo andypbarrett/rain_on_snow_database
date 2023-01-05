@@ -39,7 +39,7 @@ def knots2mps(x):
     """Converts windspeed in knots to m/s, rounds to nearest cm
     TODO: Need to check if this represnts accuracy of sensor"""
     knots_to_mps = 0.514444
-    return (x * knots_to_mps).round(2)
+    return (x * knots_to_mps)
 
 
 def u_wind(wspd, drct):
@@ -134,7 +134,7 @@ def parse_iowa_mesonet_file(df):
     # Unit conversions
     df['t2m'] = fahr2cel(df['tmpf']).round(1)  # keep 1 sig fig
     df['d2m'] = fahr2cel(df['dwpf']).round(1)  # --ditto--
-    df['wspd'] = knots2mps(df['sknt'])
+    df['wspd'] = knots2mps(df['sknt']).round(2)
     df['p01i'] = inches2mm(df['p01i']).round(1)
 
     df['UP'] = df.wxcodes.str.contains('UP')  # matches Unknown Precipitation
@@ -142,8 +142,8 @@ def parse_iowa_mesonet_file(df):
     df['FZRA'] = df.wxcodes.str.contains('FZRA')  # match freezing rain
     df['SOLID'] = df.wxcodes.str.contains('(?<!BL)SN')  # Matches SN but not BLSN,  ice???
 
-    df['uwnd'] = u_wind(df.wspd, df.drct)
-    df['vwnd'] = v_wind(df.wspd, df.drct)
+    df['uwnd'] = u_wind(df.wspd, df.drct).round(2)
+    df['vwnd'] = v_wind(df.wspd, df.drct).round(2)
     
     df = df.drop(['tmpf', 'dwpf', 'sknt', 'wxcodes'], axis=1)
 
