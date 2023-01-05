@@ -150,7 +150,7 @@ def test_parse_dataframe_trace():
     assert df_parse["RA"].equals(df_with_trace_expected["RA"]), "Parsing df_with_trace failed for RA"
     assert df_parse["FZRA"].equals(df_with_trace_expected["FZRA"]), "Parsing df_with_trace failed for FZRA"
     assert df_parse["SOLID"].equals(df_with_trace_expected["SOLID"]), "Parsing df_with_trace failed for SOLID"
-
+    assert df_parse["wspd"].equals(df_good_expected["wspd"]), "Parsing df_good failed for SOLID"
     
 def test_parse_dataframe_zero():
     """Test correct parsing of df_zero_precip"""
@@ -162,7 +162,7 @@ def test_parse_dataframe_zero():
     assert df_parse["RA"].equals(df_zero_precip_expected["RA"]), "Parsing df_zero_precip failed for RA"
     assert df_parse["FZRA"].equals(df_zero_precip_expected["FZRA"]), "Parsing df_zero_precip failed for FZRA"
     assert df_parse["SOLID"].equals(df_zero_precip_expected["SOLID"]), "Parsing df_zero_precip failed for SOLID"
-
+    assert df_parse["wspd"].equals(df_good_expected["wspd"]), "Parsing df_good failed for SOLID"
 
 def test_parse_dataframe_good():
     """Test correct parsing of df_good"""
@@ -174,6 +174,7 @@ def test_parse_dataframe_good():
     assert df_parse["RA"].equals(df_good_expected["RA"]), "Parsing df_good failed for RA"
     assert df_parse["FZRA"].equals(df_good_expected["FZRA"]), "Parsing df_good failed for FZRA"
     assert df_parse["SOLID"].equals(df_good_expected["SOLID"]), "Parsing df_good failed for SOLID"
+    assert df_parse["wspd"].equals(df_good_expected["wspd"]), "Parsing df_good failed for SOLID"
 
 
 def test_parse_all_zero_precip():
