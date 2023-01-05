@@ -132,6 +132,14 @@ def test_parse_precip_zero():
     assert (parse_arr == expected_arr).any(), f"Expected {expected_arr}, got {parse_arr}"
 
 
+def test_windspeed_conversion():
+    """Checks wind speed conversion with round-off"""
+    df = df_good
+    expected = df_good_expected.sknt.values
+    result = knots2mps(df.sknt).values
+    assert (result[~np.isnan(result)] == expected[~np.isnan(expected)]).all(), f"Expected {expected}, got {result}"
+
+
 def test_parse_dataframe_trace():
     """Test correct parsing of df_with_trace"""
     df_parse = parse_iowa_mesonet_file(df_with_trace)
