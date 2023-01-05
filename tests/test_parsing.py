@@ -4,16 +4,10 @@ import pandas as pd
 
 from ros_database.processing.surface import (parse_iowa_mesonet_file,
                                              parse_precip,
-                                             parse_all_zero_precip)
+                                             parse_all_zero_precip,
+                                             knots2mps,
+                                             u_wind, v_wind)
 
-"""
-TODO:
-- Finish creating test data
-   a. one with nan and only zero precip
-   b. one with object type and T values
-- add setting p01i with all zero to nan
-- test converting T to 0.2 inches
-"""
 
 index = pd.to_datetime(['2015-11-01 01:53:00',
                         '2015-11-01 02:53:00',
