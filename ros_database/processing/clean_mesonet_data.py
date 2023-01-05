@@ -13,7 +13,7 @@ from ros_database.processing.cleaning import remove_duplicate_records
 from ros_database.filepath import SURFOBS_CONCAT_PATH, SURFOBS_CLEAN_PATH
 
 
-def clean_iowa_mesonet_asos_station(station_path, verbose=False, debug=False):
+def clean_iowa_mesonet_asos_station(station_path, verbose=False):
     """Cleans raw Iowa Mesonet ASOS data for a single station.  All data files for a single
     station are combined.  Duplicate data records are removed.  Fields are converted
     from Imperial (English) units to SI.  Weather codes (WXCODE) for precipitation
@@ -40,21 +40,18 @@ def clean_iowa_mesonet_asos_station(station_path, verbose=False, debug=False):
     return
 
 
-def clean_mesonet_data(verbose=False, debug=False):
+def clean_mesonet_data(verbose=False):
     """Cleans all stations in raw/all_stations directory
 
     :verbose: verbose output
-    :debug: debug flag for testing
     """
-    if debug:
-        filepaths = ["test data"]
-    else:
-        filepaths = SURFOBS_CONCAT_PATH.glob("*.csv")
+    filepaths = SURFOBS_CONCAT_PATH.glob("*.csv")
 
     if verbose: print("Cleaning mesonet observation data")
     for fp in filepaths:
         if verbose: print(f"Processing {fp}")
-        clean_iowa_mesonet_asos_station(fp, verbose=verbose, debug=debug)
+        clean_iowa_mesonet_asos_station(fp, verbose=verbose)
+        break
 
 
 if __name__ == "__main__":
@@ -63,7 +60,6 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="For each station in database, removes "
                                      "duplicate records, parses records and converts units")
     parser.add_argument("--verbose", help="verbose output", action="store_true")
-    parser.add_argument("--debug", help="run debug and test file", action="store_true")
 
     args = parser.parse_args()
-    clean_mesonet_data(verbose=args.verbose, debug=args.debug)
+    clean_mesonet_data(verbose=args.verbose)
