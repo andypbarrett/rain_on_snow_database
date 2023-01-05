@@ -30,7 +30,7 @@ def clean_iowa_mesonet_asos_station(station_path, verbose=False):
     outpath = f"{SURFOBS_CLEAN_PATH / station_path.stem}.clean.csv"
 
     if verbose: print("    Removing duplicate records...")
-    df_cleaned = remove_duplicate_records(df)
+    df_cleaned = remove_duplicate_records(df, ignore_fill_warnings=ignore_fill_warnings)
     if verbose: print("    Parsing records, and converting units")
     df_parsed = parse_iowa_mesonet_file(df_cleaned)
 
@@ -40,7 +40,7 @@ def clean_iowa_mesonet_asos_station(station_path, verbose=False):
     return
 
 
-def clean_mesonet_data(verbose=False):
+def clean_mesonet_data(verbose=False, ignore_fill_warnings=False):
     """Cleans all stations in raw/all_stations directory
 
     :verbose: verbose output
@@ -50,7 +50,8 @@ def clean_mesonet_data(verbose=False):
     if verbose: print("Cleaning mesonet observation data")
     for fp in filepaths:
         if verbose: print(f"Processing {fp}")
-        clean_iowa_mesonet_asos_station(fp, verbose=verbose)
+        clean_iowa_mesonet_asos_station(fp, verbose=verbose,
+                                        ignore_fill_warnings=ignore_fill_warnings)
         break
 
 
@@ -60,6 +61,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="For each station in database, removes "
                                      "duplicate records, parses records and converts units")
     parser.add_argument("--verbose", help="verbose output", action="store_true")
+    parser.add_argument("--ignore_fill_warnings", help="silence warnings", action="store_true")
 
     args = parser.parse_args()
-    clean_mesonet_data(verbose=args.verbose)
+    clean_mesonet_data(verbose=args.verbose, ignore_fill_warnings=args.ignore_fill_warnings)
