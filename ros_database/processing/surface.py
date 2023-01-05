@@ -36,10 +36,11 @@ def inches2mm(x):
 
 
 def knots2mps(x):
-    """Converts windspeed in knots to m/s, rounds to nearest 0.5 m/s"""
-    return (x * 0.514444 * 2.0).round(0) / 2.0
+    """Converts windspeed in knots to m/s, rounds to nearest cm
+    TODO: Need to check if this represnts accuracy of sensor"""
+    knots_to_mps = 0.514444
+    return (x * knots_to_mps).round(2)
 
-    
 
 def u_wind(wspd, drct):
     """Calculate u-wind"""
