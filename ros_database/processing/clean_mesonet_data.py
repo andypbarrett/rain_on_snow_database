@@ -61,7 +61,6 @@ def clean_mesonet_data(verbose=False, ignore_fill_warnings=False):
         if verbose: print(f"Processing {fp}")
         clean_iowa_mesonet_asos_station(fp, verbose=verbose,
                                         ignore_fill_warnings=ignore_fill_warnings)
-        break
 
 
 if __name__ == "__main__":
