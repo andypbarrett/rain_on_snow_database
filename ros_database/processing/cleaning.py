@@ -29,15 +29,15 @@ def fill_missing(df, method_for_multiple="skip"):
                 warnings.warn(f"More that one unique value for {col} "
                               f"from {unique_values} in row {df.index.unique()}: "
                               "cannot select fill value")
-            df[col] = np.nan
+            df.loc[:, col] = np.nan
         else:
             fill_dict[col] = unique_values[0]
     return df.fillna(fill_dict)
 
 
-def remove_duplicate_for_index(df):
+def remove_duplicate_for_index(df, method_for_multiple="last"):
     #try:
-    filled_df = fill_missing(df)
+    filled_df = fill_missing(df.copy(deep=True), method_for_multiple=method_for_multiple)
     #except Exception as err:
     #    print(err)
     #    return None
@@ -65,7 +65,7 @@ def remove_duplicated_indices(df, debug=False):
     return pd.concat(result)
 
 
-def remove_duplicate_records(df):
+def remove_duplicate_records(df, ignore_fill_warnings=False):
     """Removes duplicate records from an DataFrame containg ASOS data
     retreived from the Iowa Mesonet Site.
 
@@ -103,7 +103,9 @@ def remove_duplicate_records(df):
     df_unique = df[~isduplicated]
 
     # Remove duplicate records
-    df_removed = remove_duplicated_indices(df_duplic)
+    with warnings.catch_warnings():
+        warnings.filterwarnings("ignore", category=UserWarning)
+        df_removed = remove_duplicated_indices(df_duplic)
     
     # Concatenate unique and removed DataFrame, and sort
     df_cleaned = pd.concat([df_unique, df_removed]).sort_index()
