@@ -39,9 +39,14 @@ def is_a_number(s):
 def get_values(s):
     """Returns a list of unique values"""
     unique_values = s.unique()
+    if len(unique_values) == 1:
+        print(f"    [{str(unique_values[0])}]")
+        return
     numbers = [str(s) for s in unique_values if is_a_number(str(s)) ]
     not_numbers = [str(s) for s in unique_values if not is_a_number(str(s))]
     print("    [" + ', '.join(not_numbers + [numbers[0]]) + f"]: with {len(numbers)} unique numbers")
+    return
+
 
 def is_all_zero(s): 
     return (s.dropna() <= 0.).sum() == s.dropna().count()
