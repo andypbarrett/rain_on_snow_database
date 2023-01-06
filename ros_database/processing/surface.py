@@ -71,6 +71,15 @@ def parse_precip(s):
     return pd.to_numeric(s.where(s != 'T', 0.2/25.4))
 
 
+def convert_dtype(x):
+    if not x:
+        return ''
+    try:
+        return float(x)   
+    except:        
+        return str(x)
+
+
 def read_iowa_mesonet_file(filepath, usecols=None, index_col=0):
     """Reads a station file from Iowa State Mesonet Archive
 
@@ -78,9 +87,18 @@ def read_iowa_mesonet_file(filepath, usecols=None, index_col=0):
 
     :returns: pandas dataframe
     """
+    # Converters for reading combined dtype column only used
+    # for raw input data
+    if 'raw' in str(filepath):
+        converters = {
+            "p01i": convert_dtype,
+        }
+    else:
+        converters = None
+
     df = pd.read_csv(filepath, header=0, index_col=index_col,
-                       parse_dates=True, na_values="M",
-                       usecols=usecols,)
+                     parse_dates=True, na_values=["M",""],
+                     usecols=usecols, converters=converters)
     df.index.rename('datetime', inplace=True)
     return df
 
