@@ -6,7 +6,8 @@ from ros_database.processing.surface import (parse_iowa_mesonet_file,
                                              parse_precip,
                                              parse_all_zero_precip,
                                              knots2mps,
-                                             u_wind, v_wind)
+                                             u_wind, v_wind,
+                                             altitude_to_pressure)
 
 
 index = pd.to_datetime(['2015-11-01 01:53:00',
@@ -116,6 +117,13 @@ def test_parse_precip_dtype():
     assert parse_precip(df_good["p01i"]).dtype == "float64", f"df_with_trace precip not returned as float64, returns {parse_precip(df_good['p01i']).dtype} instead"
 
 
+def test_altitude_conversion():
+    """Tests conversion of altitude to barometric pressure"""
+    expected_arr = [np.nan, np.nan, 812.7, 1015.9, 237.1]
+    parse_arr = altitude_to_pressure(df_with_trace["alti"]).round(1).values
+    assert (parse_arr == expected_arr).any(), f"Expected {expected_arr}, got {parse_arr}"
+
+    
 def test_parse_precip_trace():
     """Tests that parse_precip returns expected response
 
@@ -200,6 +208,7 @@ def main():
     test_parse_dataframe_trace()
     test_parse_dataframe_good()
     test_parse_dataframe_zero()
+    test_altitude_conversion()
 
 
 if __name__ == "__main__":
