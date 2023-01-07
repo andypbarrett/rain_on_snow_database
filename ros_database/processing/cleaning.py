@@ -117,7 +117,7 @@ def remove_duplicate_records(df, ignore_fill_warnings=False):
     return df_cleaned
 
 
-def range_check_one(df, col):
+def range_check_var(df, col):
     """Checks values are with expected range for one variable"""
     expmin = expected_range[col]['min']
     expmax = expected_range[col]['max']
@@ -125,6 +125,17 @@ def range_check_one(df, col):
     return
 
     
+def range_check_relh(df: pd.DataFrame):
+    """Check if relh values are within expected range.  Values above range are set_option
+    set to 100%.  Values below range are set to NaN."""
+    df['relh'].where(df['relh'] <= expected_range['relh']['max'],
+                     replacement_values['relh_above'],
+                     inplace=True)
+    df['relh'].where(df['relh'] >= expected_range['relh']['min'],
+                     inplace=True)
+    return
+
+
 def qc_range_check(df: pd.DataFrame):
     """Does quality control on expected ranges for variables.  Variables outside
     of range are set to NaNs
@@ -133,13 +144,9 @@ def qc_range_check(df: pd.DataFrame):
     
     replacements are performed in place
     """
-    df['relh'].where(df['relh'] <= expected_range['relh']['max'],
-                     replacement_values['relh_above'],
-                     inplace=True)
-    df['relh'].where(df['relh'] >= expected_range['relh']['min'],
-                     inplace=True)
-
+    range_check_relh(df)
+    
     for col in ['drct', 'p01i', 'mslp', 'psurf',
                 't2m', 'd2m', 'wspd', 'uwnd', 'vwnd']:
-        range_check_one(df, col)
+        range_check_var(df, col)
     return
