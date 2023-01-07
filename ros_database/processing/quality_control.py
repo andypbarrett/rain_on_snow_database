@@ -1,4 +1,6 @@
 """Contains data for quality control"""
+import numpy as np
+
 
 # Expected data types for columns in cleaned data files 
 expected_cleaned_dtypes = {
