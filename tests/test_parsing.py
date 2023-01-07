@@ -8,6 +8,8 @@ from ros_database.processing.surface import (parse_iowa_mesonet_file,
                                              knots2mps,
                                              u_wind, v_wind,
                                              altitude_to_pressure)
+from ros_database.processing.cleaning import (range_check_var,
+                                              range_check_relh)
 
 
 index = pd.to_datetime(['2015-11-01 01:53:00',
@@ -146,6 +148,13 @@ def test_windspeed_conversion():
     expected = df_good_expected.sknt.values
     result = knots2mps(df.sknt).values
     assert (result[~np.isnan(result)] == expected[~np.isnan(expected)]).all(), f"Expected {expected}, got {result}"
+
+
+def test_expected_range_relh():
+    parse = pd.DataFrame({'relh': [np.nan, -7., 0., 50., 100., 105., 200.]})
+    expected = pd.DataFrame({'relh': [np.nan, np.nan, 0., 50., 100., 105., 100.]})
+    range_check_relh(parse)
+    assert expected.equals(parse), f"Expected {expected['relh'].values}, got {parse['relh'].values}"
 
 
 def test_parse_dataframe_trace():
