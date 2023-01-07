@@ -63,6 +63,20 @@ def wind_direction(u, v):
     return np.where(theta < 0., 360. + theta, theta)
 
 
+def altitude_to_pressure(alti):
+    """Convert barometric altitutude to pressure using the conersion formula
+
+    P_mb = 33.8639 * P_inhg
+
+    where P_inhg is pressure in inches of mercury
+
+    :alti: barometric altitude in inches of mercury
+
+    :returns: pressure in hPa
+    """
+    return 33.8639 * alti
+
+
 def parse_precip(s):
     """Converts p01i column to numeric values, sets Trace (T) to ~0.01 inches (0.2 mm)
 
@@ -154,7 +168,8 @@ def parse_iowa_mesonet_file(df):
     df['d2m'] = fahr2cel(df['dwpf']).round(1)  # --ditto--
     df['wspd'] = knots2mps(df['sknt']).round(2)
     df['p01i'] = inches2mm(df['p01i']).round(1)
-
+    df['psurf'] = altitude_to_pressure(df['alti']).round(1)
+    
     df['UP'] = df.wxcodes.str.contains('UP')  # matches Unknown Precipitation
     df['RA'] = df.wxcodes.str.contains('(?<!FZ)RA')  # matchrain but not freezing rain
     df['FZRA'] = df.wxcodes.str.contains('FZRA')  # match freezing rain
@@ -163,7 +178,7 @@ def parse_iowa_mesonet_file(df):
     df['uwnd'] = u_wind(df.wspd, df.drct).round(2)
     df['vwnd'] = v_wind(df.wspd, df.drct).round(2)
     
-    df = df.drop(['tmpf', 'dwpf', 'sknt', 'wxcodes'], axis=1)
+    df = df.drop(['tmpf', 'dwpf', 'sknt', 'wxcodes', 'alti'], axis=1)
 
     return df
 
