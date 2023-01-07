@@ -28,18 +28,17 @@ expected_range = {
     'relh': {'min': 0., 'max': 105.},
     'drct': {'min': 0., 'max': 360.},
     'p01i': {'min': 0., 'max': 100.},
-    'alti': {'min': -100, 'max': 100},
     'mslp': {'min': 900., 'max': 1090.},
     'psurf': {'min': 600., 'max': 1090.},
-    't2m': {'min': -60., 'max': 50.},
-    'd2m': {'min': -60., 'max': 50.},
-    'wspd': {'min': 0., 'max': 100.},   # Based on Mt Washington record 231 mph
+    't2m': {'min': -70., 'max': 50.},
+    'd2m': {'min': -70., 'max': 50.},
+    'wspd': {'min': 0., 'max': 103.},
     'UP': {'min': False, 'max': True},
     'RA': {'min': False, 'max': True},
     'FZRA': {'min': False, 'max': True},
     'SOLID': {'min': False, 'max': True},
-    'uwnd': {'min': -100, 'max': 100.},
-    'vwnd': {'min': -100, 'max': 100.},
+    'uwnd': {'min': -103, 'max': 103.},
+    'vwnd': {'min': -103, 'max': 103.},
 }
 
 # Replacement values when values outside of limits
