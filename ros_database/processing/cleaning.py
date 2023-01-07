@@ -4,6 +4,10 @@ import warnings
 import numpy as np
 import pandas as pd
 
+from ros_database.processing.quality_control import (expected_range,
+                                                     replacement_values)
+
+
 def fill_missing(df, method_for_multiple="skip"):
     """Fills missing values for each column in a duplicate record
 
@@ -128,11 +132,9 @@ def range_check_var(df, col):
 def range_check_relh(df: pd.DataFrame):
     """Check if relh values are within expected range.  Values above range are set_option
     set to 100%.  Values below range are set to NaN."""
-    df['relh'].where(df['relh'] <= expected_range['relh']['max'],
-                     replacement_values['relh_above'],
-                     inplace=True)
-    df['relh'].where(df['relh'] >= expected_range['relh']['min'],
-                     inplace=True)
+    df['relh'].where((df['relh'] <= 105.) |
+                      df['relh'].isna(), 100., inplace=True)
+    df['relh'].where(df['relh'] >= 0., inplace=True)
     return
 
 
