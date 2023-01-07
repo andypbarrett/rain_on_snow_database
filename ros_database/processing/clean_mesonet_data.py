@@ -11,7 +11,8 @@ import pandas as pd
 
 from ros_database.processing.surface import (read_iowa_mesonet_file,
                                              parse_iowa_mesonet_file)
-from ros_database.processing.cleaning import remove_duplicate_records
+from ros_database.processing.cleaning import (remove_duplicate_records,
+                                              qc_range_check)
 from ros_database.filepath import SURFOBS_CONCAT_PATH, SURFOBS_CLEAN_PATH
 
 # Suppresses FutureWarning about conflict in how strings and scalars are compared
@@ -43,6 +44,9 @@ def clean_iowa_mesonet_asos_station(station_path, verbose=False,
     if verbose: print("    Parsing records, and converting units")
     df_parsed = parse_iowa_mesonet_file(df_cleaned)
 
+    if verbose: print("    Checking for out of range values...")
+    qc_range_check(df)
+    
     if verbose: print(f"    Writing cleaned data to {outpath}") 
     df_parsed.to_csv(outpath)
 
