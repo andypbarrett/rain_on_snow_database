@@ -138,7 +138,7 @@ def range_check_relh(df: pd.DataFrame):
     return
 
 
-def qc_range_check(df: pd.DataFrame):
+def qc_range_check(df: pd.DataFrame, verbose=False):
     """Does quality control on expected ranges for variables.  Variables outside
     of range are set to NaNs
 
@@ -150,5 +150,6 @@ def qc_range_check(df: pd.DataFrame):
     
     for col in ['drct', 'p01i', 'mslp', 'psurf',
                 't2m', 'd2m', 'wspd', 'uwnd', 'vwnd']:
+        if verbose: print(f"      Checking {col}")
         range_check_var(df, col)
     return
