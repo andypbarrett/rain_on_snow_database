@@ -103,6 +103,14 @@ def check_cleaned_files(verbose=False, no_checking=False):
 
 
 if __name__ == "__main__":
-    verbose = True
-    no_checking = True
-    check_cleaned_files(verbose=verbose, no_checking=no_checking)
+    import argparse
+
+    parser = argparse.ArgumentParser(description="Verifys format, ranges and expected "
+                                     "values of cleaned files")
+    parser.add_argument("--variable_statistics", action="store_true",
+                        help="Writes statistics for variables to stdout")
+    parser.add_argument("--no_checking", action="store_true",
+                        help="Just evaluate statistics for variables")
+    
+    args = parser.parse_args()
+    check_cleaned_files(verbose=args.variable_statistics, no_checking=args.no_checking)
