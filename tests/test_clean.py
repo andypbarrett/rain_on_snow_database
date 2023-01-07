@@ -4,7 +4,8 @@ from pathlib import Path
 
 from ros_database.processing.surface import (read_iowa_mesonet_file,
                                              parse_iowa_mesonet_file)
-from ros_database.processing.cleaning import remove_duplicate_records
+from ros_database.processing.cleaning import (remove_duplicate_records,
+                                              qc_range_check)
 
 TEST_PATH = Path('tests')
 
@@ -21,6 +22,9 @@ def test_one_case(station_path, verbose=True):
     df_cleaned = remove_duplicate_records(df)
     if verbose: print("    Parsing records, and converting units")
     df_parsed = parse_iowa_mesonet_file(df_cleaned)
+
+    if verbose: print("    Checking for out of range values...")
+    qc_range_check(df)
 
     if verbose: print(f"    Writing cleaned data to {outpath}") 
     print(df_parsed)
