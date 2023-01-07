@@ -214,6 +214,22 @@ def test_expected_range_wspd():
     assert expected.equals(parse), f"Expected {expected['wspd'].values}, got {parse['wspd'].values}"
 
 
+def test_expected_range_uwnd():
+    """Test for relh range check"""
+    parse = pd.DataFrame({'uwnd': [np.nan, -200., -103., 0., 103., 200.]})
+    expected = pd.DataFrame({'uwnd': [np.nan, np.nan, -103., 0., 103., np.nan]})
+    range_check_var(parse, 'uwnd')
+    assert expected.equals(parse), f"Expected {expected['uwnd'].values}, got {parse['uwnd'].values}"
+
+
+def test_expected_range_vwnd():
+    """Test for relh range check"""
+    parse = pd.DataFrame({'vwnd': [np.nan, -200., -103., 0., 103., 200.]})
+    expected = pd.DataFrame({'vwnd': [np.nan, np.nan, -103., 0., 103., np.nan]})
+    range_check_var(parse, 'vwnd')
+    assert expected.equals(parse), f"Expected {expected['vwnd'].values}, got {parse['vwnd'].values}"
+
+
 def test_parse_dataframe_trace():
     """Test correct parsing of df_with_trace"""
     df_parse = parse_iowa_mesonet_file(df_with_trace)
