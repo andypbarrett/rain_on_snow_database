@@ -1,11 +1,12 @@
 """Contains data for quality control"""
 
+# Expected data types for columns in cleaned data files 
 expected_cleaned_dtypes = {
     'station': 'object',
     'relh': 'float64',
     'drct': 'float64',
     'p01i': 'float64',
-    'alti': 'float64',
+    'psurf': 'float64',
     'mslp': 'float64',
     't2m': 'float64',
     'd2m': 'float64',
@@ -18,13 +19,18 @@ expected_cleaned_dtypes = {
     'vwnd': 'float64',
 }
 
-
+# Expected range of values for each variable.  These are used to
+# screen out "obviously" wrong values.  Expected values are determined from
+# logical ranges in the case of relative humidity and direction, and
+# climatological values otherwise.  Note: relative humidity is allowed to
+# be slightly supersaturated.
 expected_range = {
-    'relh': {'min': 0., 'max': 100.},
+    'relh': {'min': 0., 'max': 105.},
     'drct': {'min': 0., 'max': 360.},
     'p01i': {'min': 0., 'max': 100.},
     'alti': {'min': -100, 'max': 100},
     'mslp': {'min': 900., 'max': 1090.},
+    'psurf': {'min': 600., 'max': 1090.},
     't2m': {'min': -60., 'max': 50.},
     'd2m': {'min': -60., 'max': 50.},
     'wspd': {'min': 0., 'max': 100.},   # Based on Mt Washington record 231 mph
