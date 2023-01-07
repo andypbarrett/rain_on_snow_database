@@ -111,7 +111,7 @@ def read_iowa_mesonet_file(filepath, usecols=None, index_col=0):
     """
     # Converters for reading combined dtype column only used
     # for raw input data
-    if 'raw' in str(filepath):
+    if 'raw' in str(filepath.parent):
         converters = {
             "p01i": convert_dtype,
         }
@@ -219,11 +219,12 @@ def get_hourly_obs(df):
         'uwnd': 'mean',
         'vwnd': 'mean',
         'mslp': 'mean',
-        'p01': 'sum',
+        'psurf': 'mean',
+        'p01i': 'sum',
         'UP': 'any',
         'RA': 'any',
         'FZRA': 'any',
-        'SOLID': 'any'
+        'SOLID': 'any',
         })
     dfhr['wspd'] = wind_speed(dfhr.uwnd, dfhr.vwnd)
     dfhr['drct'] = wind_direction(dfhr.uwnd, dfhr.vwnd)
