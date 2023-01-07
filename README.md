@@ -81,13 +81,13 @@ Where possible these ranges are chosen to represent the region.
 
 Relative humidity (relh):  
    Minimum:   0.  - physical limit
-   Maximum: 100.  - physical limit
+   Maximum: 105.  - RH relative to e_ice
 
 1 hour Precipitation Iniensity (p01i):
    Minimum:   0.  - logical limit
    Maximum:
    
-Pressure Altimeter (alti):
+Pressure Altimeter (alti) https://glossary.ametsoc.org/wiki/Standard_atmosphere:
    Minimum:
    Maximum:
    
@@ -100,8 +100,8 @@ Sea Level Pressure (mslp):
    Maximum:  50 C - this might need to be adjusted down, I am only looking at winter 
 
 2 m (near-surface) Dew Point Temperature (d2m):
-   Minimum: 
-   Maximum:
+   Minimum: -20 C
+   Maximum:  50 C
 
 Wind Speed (wspd)
    Minimum:   0 m/s
