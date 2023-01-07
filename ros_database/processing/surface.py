@@ -97,7 +97,15 @@ def convert_dtype(x):
 def read_iowa_mesonet_file(filepath, usecols=None, index_col=0):
     """Reads a station file from Iowa State Mesonet Archive
 
+    Converters are used to handle mixed data types in p01i.
+
+    NB. A DTypeWarning is raised for one file.  This needs to be dealt with 
+    but is currently ignored.  It seems to not have an effect.
+
     :filepath: path to data file
+    :usecols: define which columns to read.  Default is to read all columns
+              usecols=USECOLS is used to read raw data.
+    :index_col: column to use as index.  Default is 0
 
     :returns: pandas dataframe
     """
