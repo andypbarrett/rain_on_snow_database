@@ -115,3 +115,14 @@ def remove_duplicate_records(df, ignore_fill_warnings=False):
         raise Exception("Duplicated records still present!")
 
     return df_cleaned
+
+
+def qc_range_check(df: pd.DataFrame):
+    """Does quality control on expected ranges for variables.  Variables outside
+    of range are set to NaNs
+
+    :df: pandas.DataFrame from parsing
+    
+    replacements are performed in place
+    """
+    return
