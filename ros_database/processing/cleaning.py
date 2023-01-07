@@ -117,6 +117,14 @@ def remove_duplicate_records(df, ignore_fill_warnings=False):
     return df_cleaned
 
 
+def range_check_one(df, col):
+    """Checks values are with expected range for one variable"""
+    expmin = expected_range[col]['min']
+    expmax = expected_range[col]['max']
+    df[col].where((df[col] >= expmin) & (df[col] <= expmax), inplace=True)
+    return
+
+    
 def qc_range_check(df: pd.DataFrame):
     """Does quality control on expected ranges for variables.  Variables outside
     of range are set to NaNs
@@ -125,4 +133,13 @@ def qc_range_check(df: pd.DataFrame):
     
     replacements are performed in place
     """
+    df['relh'].where(df['relh'] <= expected_range['relh']['max'],
+                     replacement_values['relh_above'],
+                     inplace=True)
+    df['relh'].where(df['relh'] >= expected_range['relh']['min'],
+                     inplace=True)
+
+    for col in ['drct', 'p01i', 'mslp', 'psurf',
+                't2m', 'd2m', 'wspd', 'uwnd', 'vwnd']:
+        range_check_one(df, col)
     return
