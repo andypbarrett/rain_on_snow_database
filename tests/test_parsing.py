@@ -190,6 +190,14 @@ def test_expected_range_psurf():
     assert expected.equals(parse), f"Expected {expected['psurf'].values}, got {parse['psurf'].values}"
 
 
+def test_expected_range_t2m():
+    """Test for relh range check"""
+    parse = pd.DataFrame({'t2m': [np.nan, -100., -70., 0., 20., 50., 70]})
+    expected = pd.DataFrame({'t2m': [np.nan, np.nan, -70., 0., 20., 50., np.nan]})
+    range_check_var(parse, 't2m')
+    assert expected.equals(parse), f"Expected {expected['t2m'].values}, got {parse['t2m'].values}"
+
+
 def test_parse_dataframe_trace():
     """Test correct parsing of df_with_trace"""
     df_parse = parse_iowa_mesonet_file(df_with_trace)
