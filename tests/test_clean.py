@@ -1,4 +1,11 @@
-"""Tests cleaning scripts - mostly check handling of precipitation at the moment"""
+"""
+Tests cleaning scripts - mostly check handling of precipitation at the moment
+
+# TODO:
+- create expected value and format datasets
+- add test for dtypes
+- add test for ranges
+"""
 
 from pathlib import Path
 
@@ -20,11 +27,11 @@ def test_one_case(station_path, verbose=True):
 
     if verbose: print("    Removing duplicate records...")
     df_cleaned = remove_duplicate_records(df)
-    if verbose: print("    Parsing records, and converting units")
+    if verbose: print("    Parsing records, and converting units...")
     df_parsed = parse_iowa_mesonet_file(df_cleaned)
 
     if verbose: print("    Checking for out of range values...")
-    qc_range_check(df)
+    qc_range_check(df_parsed, verbose=True)
 
     if verbose: print(f"    Writing cleaned data to {outpath}") 
     print(df_parsed)
