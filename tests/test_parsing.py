@@ -151,10 +151,43 @@ def test_windspeed_conversion():
 
 
 def test_expected_range_relh():
+    """Test for relh range check"""
     parse = pd.DataFrame({'relh': [np.nan, -7., 0., 50., 100., 105., 200.]})
     expected = pd.DataFrame({'relh': [np.nan, np.nan, 0., 50., 100., 105., 100.]})
     range_check_relh(parse)
     assert expected.equals(parse), f"Expected {expected['relh'].values}, got {parse['relh'].values}"
+
+
+def test_expected_range_drct():
+    """Test for relh range check"""
+    parse = pd.DataFrame({'drct': [np.nan, -7., 0., 180., 360., 361.]})
+    expected = pd.DataFrame({'drct': [np.nan, np.nan, 0., 180., 360., np.nan]})
+    range_check_var(parse, 'drct')
+    assert expected.equals(parse), f"Expected {expected['drct'].values}, got {parse['drct'].values}"
+
+
+def test_expected_range_p01i():
+    """Test for relh range check"""
+    parse = pd.DataFrame({'p01i': [np.nan, -7., 0., 50., 100., 500.]})
+    expected = pd.DataFrame({'p01i': [np.nan, np.nan, 0., 50., 100., np.nan]})
+    range_check_var(parse, 'p01i')
+    assert expected.equals(parse), f"Expected {expected['p01i'].values}, got {parse['p01i'].values}"
+
+
+def test_expected_range_mslp():
+    """Test for relh range check"""
+    parse = pd.DataFrame({'mslp': [np.nan, -7., 500., 900., 1013., 1090., 2000.]})
+    expected = pd.DataFrame({'mslp': [np.nan, np.nan, np.nan, 900., 1013., 1090., np.nan]})
+    range_check_var(parse, 'mslp')
+    assert expected.equals(parse), f"Expected {expected['mslp'].values}, got {parse['mslp'].values}"
+
+
+def test_expected_range_psurf():
+    """Test for relh range check"""
+    parse = pd.DataFrame({'psurf': [np.nan, -7., 500., 600., 1013., 1090., 2000.]})
+    expected = pd.DataFrame({'psurf': [np.nan, np.nan, np.nan, 900., 1013., 1090., np.nan]})
+    range_check_var(parse, 'psurf')
+    assert expected.equals(parse), f"Expected {expected['psurf'].values}, got {parse['psurf'].values}"
 
 
 def test_parse_dataframe_trace():
@@ -218,6 +251,7 @@ def main():
     test_parse_dataframe_good()
     test_parse_dataframe_zero()
     test_altitude_conversion()
+    test_expected_range_relh()
 
 
 if __name__ == "__main__":
