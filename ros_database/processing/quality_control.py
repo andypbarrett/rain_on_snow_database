@@ -42,7 +42,13 @@ expected_range = {
     'vwnd': {'min': -100, 'max': 100.},
 }
 
-
+# Replacement values when values outside of limits
+# Only for values greater than relh limits
+# np.nan otherwise
+replacement_values = {
+    'relh_above': 100.,
+}
+    
 expected_values = {
     'UP': [True, False, np.nan],
     'RA': [True, False, np.nan],
