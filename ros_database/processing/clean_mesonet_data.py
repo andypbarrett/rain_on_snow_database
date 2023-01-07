@@ -45,7 +45,7 @@ def clean_iowa_mesonet_asos_station(station_path, verbose=False,
     df_parsed = parse_iowa_mesonet_file(df_cleaned)
 
     if verbose: print("    Checking for out of range values...")
-    qc_range_check(df)
+    qc_range_check(df_parsed)
     
     if verbose: print(f"    Writing cleaned data to {outpath}") 
     df_parsed.to_csv(outpath)
