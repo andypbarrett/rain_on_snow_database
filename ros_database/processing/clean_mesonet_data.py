@@ -32,6 +32,10 @@ def clean_iowa_mesonet_asos_station(station_path, verbose=False,
 
     :station_path: Posix type or string type path to station files.
 
+    :verbose: verbose output for progress
+    :ignore_fill_warnings: suppress warnings when duplicate records are filled.  
+                           Only necessary for debugging.
+
     :returns: None
     """
 
