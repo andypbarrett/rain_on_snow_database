@@ -230,6 +230,17 @@ def get_hourly_obs(df):
     dfhr['drct'] = wind_direction(dfhr.uwnd, dfhr.vwnd)
 
     dfhr = dfhr.drop(['uwnd', 'vwnd'], axis=1)
+
+    dfhr = dfhr.round({
+        't2m': 1,
+        'd2m': 1,
+        'relh': 2,
+        'mslp': 1,
+        'psurf': 1,
+        'p01i': 1,
+        'wspd': 2,
+        'drct': 1
+        })
     return dfhr
 
 
