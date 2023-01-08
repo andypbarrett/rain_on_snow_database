@@ -211,6 +211,7 @@ def get_hourly_obs(df):
     previous hour where multiple obs available.  For occurrance of liquid and
     solid precipitation, any precipitation of type in preceding hour is reported
     """
+
     dfhr = df.resample('1H', closed='right', label='right').apply({
         'station': 'first',
         't2m': 'mean',
@@ -220,7 +221,7 @@ def get_hourly_obs(df):
         'vwnd': 'mean',
         'mslp': 'mean',
         'psurf': 'mean',
-        'p01i': 'sum',
+        'p01i': 'mean',
         'UP': 'any',
         'RA': 'any',
         'FZRA': 'any',
