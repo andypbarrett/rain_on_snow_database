@@ -17,7 +17,7 @@ from ros_database.processing.cleaning import (remove_duplicate_records,
 TEST_PATH = Path('tests')
 
 
-def test_one_case(station_path, verbose=True):
+def test_one_case(station_path, verbose=True, write_cleaned=True):
     """Mimics clean_iowa_mesonet_asos_station but outputs a human readable
        file"""
 
@@ -33,31 +33,35 @@ def test_one_case(station_path, verbose=True):
     if verbose: print("    Checking for out of range values...")
     qc_range_check(df_parsed, verbose=True)
 
-    if verbose: print(f"    Writing cleaned data to {outpath}") 
+    if write_cleaned:
+        if verbose: print(f"    Writing cleaned data to {outpath}")
+        df_parsed.to_csv(outpath)
+    
     print(df_parsed)
 
 
-def test_raw_input():
+def test_raw_input(write_cleaned=True):
     """Test code for simple case"""
     test_file = TEST_PATH / "test_data_raw.csv"
-    test_one_case(test_file, verbose=True)
+    test_one_case(test_file, verbose=True, write_cleaned=write_cleaned)
 
 
-def test_trace_precip_input():
+def test_trace_precip_input(write_cleaned=True):
     """Test code for simple case"""
     test_file = TEST_PATH / "test_data_with_trace.csv"
-    test_one_case(test_file, verbose=True)
+    test_one_case(test_file, verbose=True, write_cleaned=write_cleaned)
 
 
-def test_zero_precip_input():
+def test_zero_precip_input(write_cleaned=True):
     """Test code for simple case"""
     test_file = TEST_PATH / "test_data_all_zero.csv"
-    test_one_case(test_file, verbose=True)
+    test_one_case(test_file, verbose=True, write_cleaned=write_cleaned)
 
 
 if __name__ == "__main__":
-    test_raw_input()
+    write_cleaned=True
+    test_raw_input(write_cleaned=write_cleaned)
     print("-"*30+"\n")
-    test_trace_precip_input()
+    test_trace_precip_input(write_cleaned=write_cleaned)
     print("-"*30+"\n")
-    test_zero_precip_input()
+    test_zero_precip_input(write_cleaned=write_cleaned)
