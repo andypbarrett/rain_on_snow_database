@@ -21,6 +21,8 @@ ANIMATION_PATH = AROSS_PATH / "Animations"
 SURFOBS_PATH = AROSS_PATH / "Observations" / "Surface"
 # Path to raw surface observation data
 SURFOBS_RAW_PATH = SURFOBS_PATH / "raw"
+# Path to concatenated files
+SURFOBS_CONCAT_PATH = SURFOBS_RAW_PATH / "all_stations"
 # Path to processed hourly surface observation
 SURFOBS_HOURLY_PATH = SURFOBS_PATH / "hourly"
 # Path to combined surface obs path
