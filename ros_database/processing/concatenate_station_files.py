@@ -1,6 +1,8 @@
 """Concatenates all files for a single station, creates a new filename with just 
 station code identifier and date range.  Note data are still only for winter period.
 This file format simplifies loading data and allows complete record download in the future.
+
+NB: In the current versions of combined files, only selected columns are read from the winter period files.
 """
 
 from ros_database.processing.surface import (station_paths_in_country,  
@@ -16,11 +18,11 @@ def get_station_paths():
     return [path for country in country_list for path in station_paths_in_country(country)]
 
     
-def concatenate_station_files(verbose=False):
+def concatenate_station_files(verbose=False, loadraw=True):
     """Main function to concatenate files for all stations"""
     for path in get_station_paths():
         print(f"   Loading files from {path}")
-        df = load_iowa_mesonet_for_station(path)
+        df = load_iowa_mesonet_for_station(path, loadraw=loadraw)
         station_id = df.iloc[0,0]
         start_date = df.index[0].strftime("%Y%m%d")
         end_date = df.index[-1].strftime("%Y%m%d")
@@ -30,4 +32,13 @@ def concatenate_station_files(verbose=False):
 
 
 if __name__ == "__main__":
-    concatenate_station_files(verbose=True)
+    import argparse
+
+    parser = argparse.ArgumentParser(description="Concatenate winter period station files "
+                                     "into a single file by station")
+    parser.add_argument("--loadraw", help="Concatenate raw stations.  Default load selected columns",
+                        action="store_true")
+    parser.add_argument("--verbose", "-v", help="verbose", action="store_true")
+    args = parser.parse_args()
+
+    concatenate_station_files(verbose=args.verbose, loadraw=args.loadraw)

@@ -36,10 +36,11 @@ def inches2mm(x):
 
 
 def knots2mps(x):
-    """Converts windspeed in knots to m/s, rounds to nearest 0.5 m/s"""
-    return (x * 0.514444 * 2.0).round(0) / 2.0
+    """Converts windspeed in knots to m/s, rounds to nearest cm
+    TODO: Need to check if this represnts accuracy of sensor"""
+    knots_to_mps = 0.514444
+    return (x * knots_to_mps)
 
-    
 
 def u_wind(wspd, drct):
     """Calculate u-wind"""
@@ -62,6 +63,20 @@ def wind_direction(u, v):
     return np.where(theta < 0., 360. + theta, theta)
 
 
+def altitude_to_pressure(alti):
+    """Convert barometric altitutude to pressure using the conersion formula
+
+    P_mb = 33.8639 * P_inhg
+
+    where P_inhg is pressure in inches of mercury
+
+    :alti: barometric altitude in inches of mercury
+
+    :returns: pressure in hPa
+    """
+    return 33.8639 * alti
+
+
 def parse_precip(s):
     """Converts p01i column to numeric values, sets Trace (T) to ~0.01 inches (0.2 mm)
 
@@ -70,18 +85,67 @@ def parse_precip(s):
     return pd.to_numeric(s.where(s != 'T', 0.2/25.4))
 
 
-def read_iowa_mesonet_file(filepath, usecols=USECOLS):
+def convert_dtype(x):
+    if not x:
+        return ''
+    try:
+        return float(x)   
+    except:        
+        return str(x)
+
+
+def read_iowa_mesonet_file(filepath, usecols=None, index_col=0):
     """Reads a station file from Iowa State Mesonet Archive
 
+    Converters are used to handle mixed data types in p01i.
+
+    NB. A DTypeWarning is raised for one file.  This needs to be dealt with 
+    but is currently ignored.  It seems to not have an effect.
+
     :filepath: path to data file
+    :usecols: define which columns to read.  Default is to read all columns
+              usecols=USECOLS is used to read raw data.
+    :index_col: column to use as index.  Default is 0
 
     :returns: pandas dataframe
     """
-    df = pd.read_csv(filepath, header=0, index_col="valid",
-                       parse_dates=True, na_values="M",
-                       usecols=usecols,)
+    # Converters for reading combined dtype column only used
+    # for raw input data
+    if 'raw' in str(filepath.parent):
+        converters = {
+            "p01i": convert_dtype,
+        }
+    else:
+        converters = None
+
+    df = pd.read_csv(filepath, header=0, index_col=index_col,
+                     parse_dates=True, na_values=["M",""],
+                     usecols=usecols, converters=converters)
     df.index.rename('datetime', inplace=True)
     return df
+
+
+def check_precip_all_zero(s):
+    """Check if all elements in precipitation Series are all zero.  Ignores NaN
+
+    :s: pandas Series
+
+    :returns: Boolean
+    """
+    return (s.dropna() == 0.).all()
+
+
+def parse_all_zero_precip(s):
+    """If p01i (1 hr precipitation intensity) are all zero, replace with NaN
+
+    :s: pandas.Series containing p01i values
+
+    :returns: pandas.Series containing all NaN, or s
+    """
+    sc = s.copy()
+    if check_precip_all_zero(sc):
+        sc.loc[:] = np.nan
+    return sc.values
 
 
 def parse_iowa_mesonet_file(df):
@@ -104,22 +168,25 @@ def parse_iowa_mesonet_file(df):
     - tmpf, dwpf, sknt, p01i and wxcodes are dropped
     """
     df['p01i'] = parse_precip(df["p01i"])  # Set Trace to ~0.01 inches 
+
+    df.loc[: , "p01i"] = parse_all_zero_precip(df["p01i"])  # if all zeros change to NaN
     
     # Unit conversions
     df['t2m'] = fahr2cel(df['tmpf']).round(1)  # keep 1 sig fig
     df['d2m'] = fahr2cel(df['dwpf']).round(1)  # --ditto--
-    df['wspd'] = knots2mps(df['sknt'])
-    df['p01'] = inches2mm(df['p01i']).round(1)
-
+    df['wspd'] = knots2mps(df['sknt']).round(2)
+    df['p01i'] = inches2mm(df['p01i']).round(1)
+    df['psurf'] = altitude_to_pressure(df['alti']).round(1)
+    
     df['UP'] = df.wxcodes.str.contains('UP')  # matches Unknown Precipitation
     df['RA'] = df.wxcodes.str.contains('(?<!FZ)RA')  # matchrain but not freezing rain
     df['FZRA'] = df.wxcodes.str.contains('FZRA')  # match freezing rain
     df['SOLID'] = df.wxcodes.str.contains('(?<!BL)SN')  # Matches SN but not BLSN,  ice???
 
-    df['uwnd'] = u_wind(df.wspd, df.drct)
-    df['vwnd'] = v_wind(df.wspd, df.drct)
+    df['uwnd'] = u_wind(df.wspd, df.drct).round(2)
+    df['vwnd'] = v_wind(df.wspd, df.drct).round(2)
     
-    df = df.drop(['tmpf', 'dwpf', 'sknt', 'p01i', 'wxcodes'], axis=1)
+    df = df.drop(['tmpf', 'dwpf', 'sknt', 'wxcodes', 'alti'], axis=1)
 
     return df
 
@@ -144,6 +211,7 @@ def get_hourly_obs(df):
     previous hour where multiple obs available.  For occurrance of liquid and
     solid precipitation, any precipitation of type in preceding hour is reported
     """
+
     dfhr = df.resample('1H', closed='right', label='right').apply({
         'station': 'first',
         't2m': 'mean',
@@ -152,16 +220,28 @@ def get_hourly_obs(df):
         'uwnd': 'mean',
         'vwnd': 'mean',
         'mslp': 'mean',
-        'p01': 'sum',
+        'psurf': 'mean',
+        'p01i': 'mean',
         'UP': 'any',
         'RA': 'any',
         'FZRA': 'any',
-        'SOLID': 'any'
+        'SOLID': 'any',
         })
     dfhr['wspd'] = wind_speed(dfhr.uwnd, dfhr.vwnd)
     dfhr['drct'] = wind_direction(dfhr.uwnd, dfhr.vwnd)
 
     dfhr = dfhr.drop(['uwnd', 'vwnd'], axis=1)
+
+    dfhr = dfhr.round({
+        't2m': 1,
+        'd2m': 1,
+        'relh': 2,
+        'mslp': 1,
+        'psurf': 1,
+        'p01i': 1,
+        'wspd': 2,
+        'drct': 1
+        })
     return dfhr
 
 

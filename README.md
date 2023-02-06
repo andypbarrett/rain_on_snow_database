@@ -74,6 +74,50 @@ and sorted by time index.  This new unique DataFrame is returned.
 - decode WXCODE and convert units
 - aggregate to create hourly records.
 
+### Quality Control
+
+Variables are checked to ensure they are within sensible ranges.
+Where possible these ranges are chosen to represent the region.
+
+Relative humidity (relh):  
+   Minimum:   0.  - physical limit
+   Maximum: 105.  - RH relative to e_ice
+
+1 hour Precipitation Iniensity (p01i):
+   Minimum:   0.  - logical limit
+   Maximum:
+   
+Pressure Altimeter (alti) https://glossary.ametsoc.org/wiki/Standard_atmosphere:
+   Minimum:
+   Maximum:
+   
+Sea Level Pressure (mslp):
+   Minimum:  900 hPa  - pressures below 900 hPa are only recorded in hurricanes 
+   Maximum: 1090 hPa  - just above highest recorded pressure 1083.3 hPa 
+
+2 m (near-surface) Air Temperature (t2m):
+   Minimum: -70 C - based on lowest recorded Arctic temperature -67.8 C Siberia
+   Maximum:  50 C - this might need to be adjusted down, I am only looking at winter 
+
+2 m (near-surface) Dew Point Temperature (d2m):
+   Minimum: -20 C
+   Maximum:  50 C
+
+Wind Speed (wspd)
+   Minimum:   0 m/s
+   Maximum: 103 m/s - based on highest recorded wind speed from Mt Washington
+
+Wind direction (drct):
+   Minimum:   0.  - logical limit
+   Maximum: 360.  - logical limit
+
+Zonal and Meridional Wind Speeds (uwnd, vwnd):
+   Minimum: -103. m/s
+   Maximum:  103.  m/s
+
+Precipitation type from weather codes (UP, RA, FZRA, SOLID) are boolean.
+
+
 ### Extracting precipitation events
 - combine with ims
 - Extract events

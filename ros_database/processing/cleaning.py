@@ -1,28 +1,59 @@
 """Code used to clean raw Iowa mesonet datafiles"""
+import warnings
+
+import numpy as np
 import pandas as pd
 
-def fill_missing(df):
-    """Fills missing values"""
+from ros_database.processing.quality_control import (expected_range,
+                                                     replacement_values)
+
+
+def fill_missing(df, method_for_multiple="skip"):
+    """Fills missing values for each column in a duplicate record
+
+    :df: pandas.DataFrame
+
+    :method_for_multiple: method to deal with more than one unique value for a
+                          duplicate timestamp.  Default is to "skip" the timestamp.
+                          If 'last' is chosen, then the last value is selected.  This 
+                          assumes that the last value in the sequence is the last
+                          transmission and is an update."""
     fill_dict = {}
     for col in df.columns:
         if df[col].isna().all(): continue
         unique_values = df[col].dropna().unique()
         if len(unique_values) > 1:
-            raise Exception(f"More that one unique value for {col} from {unique_values} in row {df.index.unique()}: cannot select fill value") 
-        fill_dict[col] = unique_values[0]
+            if method_for_multiple == "last":
+                fill_dict[col] = unique_values[-1]
+                warnings.warn(f"More that one unique value for {col} "
+                              f"from {unique_values} in row {df.index.unique()}: "
+                              "selecting last value")
+            else:
+                fill_dict[col] = np.nan
+                warnings.warn(f"More that one unique value for {col} "
+                              f"from {unique_values} in row {df.index.unique()}: "
+                              "cannot select fill value")
+            df.loc[:, col] = np.nan
+        else:
+            fill_dict[col] = unique_values[0]
     return df.fillna(fill_dict)
 
 
-def remove_duplicate_for_index(df):
-    try:
-        filled_df = fill_missing(df)
-    except Exception as err:
-        print(err)
-        return None
+def remove_duplicate_for_index(df, method_for_multiple="last"):
+    #try:
+    filled_df = fill_missing(df.copy(deep=True), method_for_multiple=method_for_multiple)
+    #except Exception as err:
+    #    print(err)
+    #    return None
     return filled_df.drop_duplicates()
 
 
-def remove_duplicated_indices(df):
+def check_all_none(list_of_dataframes):
+    """Check if all members of lis are None"""
+    return all([df is None for df in list_of_dataframes])
+
+
+def remove_duplicated_indices(df, debug=False):
     """Removes duplicated records from a DataFrame containing duplicated records
 
     :df: pandas DataFrame containg duplicated records
@@ -33,10 +64,12 @@ def remove_duplicated_indices(df):
     result = []
     for idx in unique_indices:
         result.append(remove_duplicate_for_index(df.loc[idx]))
+    if check_all_none(result):
+        return None
     return pd.concat(result)
 
 
-def remove_duplicate_records(df):
+def remove_duplicate_records(df, ignore_fill_warnings=False):
     """Removes duplicate records from an DataFrame containg ASOS data
     retreived from the Iowa Mesonet Site.
 
@@ -66,11 +99,17 @@ def remove_duplicate_records(df):
     :returns: pandas.DataFrame with unique date sorted indices"""
     # split into two DataFrames with duplicated indices and unique indices
     isduplicated = df.index.duplicated(keep=False)
+    nduplicated = sum(isduplicated)
+    if nduplicated == 0:
+        return df
+    
     df_duplic = df[isduplicated]
     df_unique = df[~isduplicated]
-    
+
     # Remove duplicate records
-    df_removed = remove_duplicated_indices(df_duplic)
+    with warnings.catch_warnings():
+        warnings.filterwarnings("ignore", category=UserWarning)
+        df_removed = remove_duplicated_indices(df_duplic)
     
     # Concatenate unique and removed DataFrame, and sort
     df_cleaned = pd.concat([df_unique, df_removed]).sort_index()
@@ -80,3 +119,37 @@ def remove_duplicate_records(df):
         raise Exception("Duplicated records still present!")
 
     return df_cleaned
+
+
+def range_check_var(df, col):
+    """Checks values are with expected range for one variable"""
+    expmin = expected_range[col]['min']
+    expmax = expected_range[col]['max']
+    df[col].where((df[col] >= expmin) & (df[col] <= expmax), inplace=True)
+    return
+
+    
+def range_check_relh(df: pd.DataFrame):
+    """Check if relh values are within expected range.  Values above range are set_option
+    set to 100%.  Values below range are set to NaN."""
+    df['relh'].where((df['relh'] <= 105.) |
+                      df['relh'].isna(), 100., inplace=True)
+    df['relh'].where(df['relh'] >= 0., inplace=True)
+    return
+
+
+def qc_range_check(df: pd.DataFrame, verbose=False):
+    """Does quality control on expected ranges for variables.  Variables outside
+    of range are set to NaNs
+
+    :df: pandas.DataFrame from parsing
+    
+    replacements are performed in place
+    """
+    range_check_relh(df)
+    
+    for col in ['drct', 'p01i', 'mslp', 'psurf',
+                't2m', 'd2m', 'wspd', 'uwnd', 'vwnd']:
+        if verbose: print(f"      Checking {col}")
+        range_check_var(df, col)
+    return

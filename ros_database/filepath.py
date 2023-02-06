@@ -4,7 +4,7 @@ from pathlib import Path
 
 # Get root data path depending on host
 host = socket.gethostname()
-if host == "nsidc-abarrett-442":
+if host == "nsidc-442-abarrett":
     AROSS_PATH = Path("/home/apbarret/Data/Rain_on_snow")  # Needs sorting out
 else:
     AROSS_PATH = Path("/projects/AROSS")
@@ -23,6 +23,8 @@ SURFOBS_PATH = AROSS_PATH / "Observations" / "Surface"
 SURFOBS_RAW_PATH = SURFOBS_PATH / "raw"
 # Path to concatenated files
 SURFOBS_CONCAT_PATH = SURFOBS_RAW_PATH / "all_stations"
+# Path to cleaned files
+SURFOBS_CLEAN_PATH = SURFOBS_PATH / "clean"
 # Path to processed hourly surface observation
 SURFOBS_HOURLY_PATH = SURFOBS_PATH / "hourly"
 # Path to combined surface obs path
