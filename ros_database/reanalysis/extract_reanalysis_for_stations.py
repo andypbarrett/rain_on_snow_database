@@ -216,17 +216,17 @@ def extract_reanalysis_for_stations(years, reanalysis = 'era5', verbose=False,
             extract_surface_variables(year, (latitude, longitude), reanalysis,
                                       verbose=verbose, clobber=clobber)
 
-        if variable in ['all', 'upper air', 'air temperature']:
+        if variable in ['all', 'upper_air', 'air_temperature']:
             if verbose: print(f"Extract upper air air_temperature for stations for {year}")
             extract_upper_air_variable(year, "air_temperature", (latitude, longitude), reanalysis,
                                        verbose=verbose, clobber=clobber)
 
-        if variable in ['all', 'upper air', 'geopotential']:
+        if variable in ['all', 'upper_air', 'geopotential']:
             if verbose: print(f"Extract upper air geopotential for stations for {year}")
             extract_upper_air_variable(year, "geopotential", (latitude, longitude), reanalysis,
                                        verbose=verbose, clobber=clobber)
 
-        if variable in ['all', 'upper air', 'specific humidity']:
+        if variable in ['all', 'upper_air', 'specific_humidity']:
             if verbose: print(f"Extract upper air specific_humidity for stations for {year}")
             extract_upper_air_variable(year, "specific_humidity", (latitude, longitude), reanalysis,
                                        verbose=verbose, clobber=clobber)
@@ -242,8 +242,8 @@ if __name__ == "__main__":
                         help="Single year or list of years")
     parser.add_argument("--variable", type=str, default="all",
                         help="Name of variable or group of variables to extract",
-                        choices=['all', 'surface', 'upper air', 'air temperature',
-                                 'geopotential', 'specific humidity'])
+                        choices=['all', 'surface', 'upper_air', 'air_temperature',
+                                 'geopotential', 'specific_humidity'])
     parser.add_argument("--verbose", "-v", action="store_true",
                         help="Verbose output")
     parser.add_argument("--clobber", "-c", action="store_true",
