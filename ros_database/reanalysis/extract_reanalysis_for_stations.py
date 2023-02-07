@@ -13,7 +13,7 @@ import numpy as np
 import xarray as xr
 
 from ros_database.filepath import ERA5_DATAPATH, STATIONS_SURFACE_REANALYSIS
-from rain_on_snow.surfaceobs.surface import load_station_metadata
+from ros_database.processing.surface import load_station_metadata
 
 
 def surface_files_for_year(year):
