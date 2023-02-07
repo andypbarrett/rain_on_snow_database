@@ -12,7 +12,7 @@ from dask.diagnostics import ProgressBar, Profiler
 import numpy as np
 import xarray as xr
 
-from ros_database.filepath import ERA5_DATAPATH, STATIONS_SURFACE_REANALYSIS
+from ros_database.filepath import ERA5_DATAPATH, STATIONS_SURFACE_REANALYSIS, STATIONS_UPPER_AIR_REANALYSIS
 from ros_database.processing.surface import load_station_metadata
 
 
@@ -150,7 +150,7 @@ def extract_upper_air_variable(year, variable, stations, reanalysis,
     :reanalysis: dummy var to allow choice of reanalysis - not implemented
     :clobber: overwrite file if it exists
     """
-    ncout = STATIONS_SURFACE_REANALYSIS / f"era5.{variable}.stations.{year}.nc"
+    ncout = STATIONS_UPPER_AIR_REANALYSIS / f"era5.{variable}.stations.{year}.nc"
     if (not clobber) & ncout.is_file():
         warnings.warn(f"File exists!  Skipping extracting upper air {variable} from {reanalysis} for {year}",
                       UserWarning)
