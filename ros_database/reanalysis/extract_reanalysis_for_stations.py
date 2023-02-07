@@ -234,13 +234,21 @@ def extract_reanalysis_for_stations(reanalysis = 'era5', verbose=False,
 
 if __name__ == "__main__":
     # TODO
-    # Remove print statements
-    # Add argparse
     # Extract script to scripts
-    # Update docstrings
-    variable = 'air temperature'
-    verbose = True
-    year_end = 2000
-    clobber = True
+    import argparse
+
+    parser = argparse.ArgumentParser(description="Extract surface and upper air fields for Mesonet stations")
+    parser.add_argument("year", type=int, nargs="+",
+                        help="Single year or list of years")
+    parser.add_argument("--variable", type=str, default="all",
+                        help="Name of variable or group of variables to extract",
+                        choices=['all', 'surface', 'upper air', 'air temperature',
+                                 'geopotential', 'specific humidity'])
+    parser.add_argument("--verbose", "-v", action="store_true",
+                        help="Verbose output")
+    parser.add_argument("--clobber", "-c", action="store_true",
+                        help="Overwrite files")
+    args = parser.parse_args()
+
     extract_reanalysis_for_stations(verbose=verbose, year_end=year_end, variable=variable,
                                     clobber=clobber)
