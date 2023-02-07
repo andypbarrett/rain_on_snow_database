@@ -158,21 +158,17 @@ def extract_upper_air_variable(year, variable, stations, reanalysis,
 
     if verbose: print(f"    Loading {variable}...")
     ds = load_upper_air_data(year, variable, reanalysis=reanalysis)
-    print(ds)
-#    return
 
     if verbose: print("   Subsetting data...")
     latitude = stations[0]
     longitude = stations[1]
     sub_ds = ds.sel(longitude=longitude, latitude=latitude, method='nearest')
-    print(sub_ds)
     
     if verbose: print("   Computing...")
     with Profiler() as prof, ProgressBar():
         sub_ds.load()
 
     sub_ds = sub_ds.chunk({"level": 9})
-    print(sub_ds)
 
     if verbose: print(f"   Writing station subset of surface data to {ncout}")
     with ProgressBar():
@@ -235,7 +231,6 @@ def extract_reanalysis_for_stations(reanalysis = 'era5', verbose=False,
             extract_upper_air_variable(year, "specific_humidity", (latitude, longitude), reanalysis,
                                        verbose=verbose, clobber=clobber)
 
-    #prof.visualize()
 
 if __name__ == "__main__":
     # TODO
