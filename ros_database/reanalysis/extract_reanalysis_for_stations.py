@@ -190,15 +190,15 @@ def load_stations():
     return longitude, latitude
 
 
-def extract_reanalysis_for_stations(reanalysis = 'era5', verbose=False,
-                                    year_start=2000, year_end=2022,
+def extract_reanalysis_for_stations(years, reanalysis = 'era5', verbose=False,
                                     variable='all', clobber=False):
     """Extracts surface and upper air data for reanalysis pixels that contain ROS stations
 
-    :reanalysis: name of reanalysis - only era5 at the moment
-    :verbose: verbose output
-    :year_start: year to start extracting data.  Default 2000
-    :year_end: year to end extraction.  Default 2022
+    :year: int year or list of years to extract
+    :variable: name of variable or group of variables to extract
+    :reanalysis: str name of reanalysis - only era5 at the moment
+    :verbose: bool verbose output
+    :clobber: bool overwrite files
 
     returns None
 
@@ -209,7 +209,7 @@ def extract_reanalysis_for_stations(reanalysis = 'era5', verbose=False,
     if verbose: print("Loading station metadata")
     longitude, latitude = load_stations()
 
-    for year in np.arange(year_start, year_end+1):
+    for year in years:
 
         if variable in ['all', 'surface']:
             if verbose: print(f"Extracting surface variables for stations for {year}")
