@@ -111,7 +111,6 @@ def extract_surface_variables(year, stations, reanalysis, verbose=False, clobber
     latitude = stations[0]
     longitude = stations[1]
     sub_df = df.sel(longitude=longitude, latitude=latitude, method='nearest')
-    print(sub_df)
     
     if verbose: print("   Computing...")
     with Profiler() as prof, ProgressBar():
@@ -124,6 +123,7 @@ def extract_surface_variables(year, stations, reanalysis, verbose=False, clobber
         else:
             sub_df.to_netcdf(fout)
     df.close()
+    sub_df.close()
     return
 
     
@@ -173,9 +173,9 @@ def extract_upper_air_variable(year, variable, stations, reanalysis,
     if verbose: print(f"   Writing station subset of surface data to {ncout}")
     with ProgressBar():
         sub_ds.to_netcdf(ncout)
-    return
     ds.close()
     sub_ds.close()
+    return
     
     
 def load_stations():
