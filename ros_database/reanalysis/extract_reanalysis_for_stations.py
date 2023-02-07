@@ -115,7 +115,7 @@ def extract_surface_variables(year, stations, reanalysis, verbose=False, clobber
     
     if verbose: print("   Computing...")
     with Profiler() as prof, ProgressBar():
-        sub_df.compute()
+        sub_df.load()
 
     if verbose: print(f"   Writing station subset of surface data to {fout}")
     with ProgressBar():
@@ -169,7 +169,7 @@ def extract_upper_air_variable(year, variable, stations, reanalysis,
     
     if verbose: print("   Computing...")
     with Profiler() as prof, ProgressBar():
-        sub_ds.compute()
+        sub_ds.load()
 
     sub_ds = sub_ds.chunk({"level": 9})
     print(sub_ds)
