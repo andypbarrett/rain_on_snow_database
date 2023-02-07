@@ -195,7 +195,8 @@ def load_stations():
 
 
 def extract_reanalysis_for_stations(reanalysis = 'era5', verbose=False,
-                                    year_start=2000, year_end=2022):
+                                    year_start=2000, year_end=2022,
+                                    variable='all'):
     """Extracts surface and upper air data for reanalysis pixels that contain ROS stations
 
     :reanalysis: name of reanalysis - only era5 at the moment
@@ -214,22 +215,29 @@ def extract_reanalysis_for_stations(reanalysis = 'era5', verbose=False,
 
     for year in np.arange(year_start, year_end+1):
 
-        if verbose: print(f"Extracting surface variables for stations for {year}")
-        extract_surface_variables(year, (latitude, longitude), reanalysis, verbose=verbose)
-            
-        if verbose: print(f"Extract upper air air_temperature for stations for {year}")
-        extract_upper_air_variable(year, "air_temperature", (latitude, longitude), reanalysis,
-                                    verbose=verbose, clobber=True)
-        
-        if verbose: print(f"Extract upper air geopotential for stations for {year}")
-        extract_upper_air_variable(year, "geopotential", (latitude, longitude), reanalysis,
-                                    verbose=verbose, clobber=True)
-        
-        if verbose: print(f"Extract upper air specific_humidity for stations for {year}")
-        extract_upper_air_variable(year, "specific_humidity", (latitude, longitude), reanalysis,
-                                    verbose=verbose, clobber=True)
-        
+        if variable in ['all', 'surface']:
+            if verbose: print(f"Extracting surface variables for stations for {year}")
+            extract_surface_variables(year, (latitude, longitude), reanalysis, verbose=verbose)
+
+        if variable in ['all', 'upper air', 'air_temperature']:
+            if verbose: print(f"Extract upper air air_temperature for stations for {year}")
+            extract_upper_air_variable(year, "air_temperature", (latitude, longitude), reanalysis,
+                                       verbose=verbose, clobber=True)
+
+        if variable in ['all', 'upper air', 'geopotential']:
+            if verbose: print(f"Extract upper air geopotential for stations for {year}")
+            extract_upper_air_variable(year, "geopotential", (latitude, longitude), reanalysis,
+                                       verbose=verbose, clobber=True)
+
+        if variable in ['all', 'upper air', 'specific humidity']:
+            if verbose: print(f"Extract upper air specific_humidity for stations for {year}")
+            extract_upper_air_variable(year, "specific_humidity", (latitude, longitude), reanalysis,
+                                       verbose=verbose, clobber=True)
+
     #prof.visualize()
 
 if __name__ == "__main__":
-    extract_reanalysis_for_stations(verbose=True, year_end=2000)
+    variable = 'surface'
+    verbose = True
+    year_end = 2000
+    extract_reanalysis_for_stations(verbose=verbose, year_end=year_end, variable=variable)
