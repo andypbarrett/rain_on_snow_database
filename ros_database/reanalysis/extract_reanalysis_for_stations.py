@@ -250,5 +250,6 @@ if __name__ == "__main__":
                         help="Overwrite files")
     args = parser.parse_args()
 
-    extract_reanalysis_for_stations(verbose=verbose, year_end=year_end, variable=variable,
-                                    clobber=clobber)
+    extract_reanalysis_for_stations(args.year, variable=args.variable,
+                                    verbose=args.verbose,
+                                    clobber=args.clobber)
