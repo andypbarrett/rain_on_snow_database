@@ -34,6 +34,7 @@ SURFOBS_EVENTS_PATH = SURFOBS_PATH / "events"
 
 # Reanalysis data extracted for stations
 STATIONS_SURFACE_REANALYSIS = ERA5_DATAPATH / 'surface' / 'stations' / 'hourly'
+STATIONS_UPPER_AIR_REANALYSIS = ERA5_DATAPATH / 'pressure_levels' / 'stations' / 'hourly'
 
 # IMS Snow cover files
 IMS_PATH = AROSS_PATH / 'IMS_Daily_NorthernHemisphere_Snow' / 'original' / '4km'
