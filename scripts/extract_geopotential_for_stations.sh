@@ -1,7 +1,7 @@
 #!/bin/bash
 
-YBEG=2000
-YEND=2003
+YBEG=2004
+YEND=2022
 
 YEARS=$(seq $YBEG $YEND)
 
