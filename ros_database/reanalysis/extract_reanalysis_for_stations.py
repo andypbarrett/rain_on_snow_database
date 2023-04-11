@@ -105,7 +105,11 @@ def extract_surface_variables(year, stations, reanalysis, verbose=False, clobber
         fout.unlink()
         
     if verbose: print(f"   Loading surface reanalysis...")
-    df = load_surface_data(year, reanalysis=reanalysis)
+    try:
+        df = load_surface_data(year, reanalysis=reanalysis)
+    except OSError as err:
+        print(f"No files for surface for {year}")
+        return
     
     if verbose: print("   Subsetting data...")
     latitude = stations[0]
@@ -133,9 +137,9 @@ def load_upper_air_data(year, variable,reanalysis='era5'):
     if variable == "air_temperature":
         df = xr.open_mfdataset(ta_files_for_year(year), chunks=chunks, combine='by_coords')
     elif variable == "geopotential":
-        df = xr.open_mfdataset(z_files_for_year(year), combine="by_coords")
+        df = xr.open_mfdataset(z_files_for_year(year), chunks=chunks, combine="by_coords")
     elif variable == "specific_humidity":
-        df = xr.open_mfdataset(q_files_for_year(year), combine="by_coords")
+        df = xr.open_mfdataset(q_files_for_year(year), chunks=chunks, combine="by_coords")
     else:
         raise ValueError(f"{variable} is unknown for variable") 
     return df
@@ -157,7 +161,14 @@ def extract_upper_air_variable(year, variable, stations, reanalysis,
         return
 
     if verbose: print(f"    Loading {variable}...")
-    ds = load_upper_air_data(year, variable, reanalysis=reanalysis)
+    try:
+        ds = load_upper_air_data(year, variable, reanalysis=reanalysis)
+    except OSError as err:
+        print(f"No files for {variable} for {year}")
+        return
+    except ValueError as err:
+        print(f"Unknown variable: {variable}")
+        return
 
     if verbose: print("   Subsetting data...")
     latitude = stations[0]
