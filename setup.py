@@ -9,7 +9,7 @@ setup(
     install_requires=[
         'pytest',
         ],
-    license=open('LICENSE_NASA').read(),
+    license=open('LICENSE').read(),
     description='A package to generate a rain on snow database for the AROSS project',
     long_description=open('README.md').read(),
 )
