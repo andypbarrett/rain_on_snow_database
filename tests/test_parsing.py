@@ -280,21 +280,3 @@ def test_parse_not_all_zero_precip():
     result = np.isnan(parse_all_zero_precip(test_df))
     expected = [True, False, False]
     assert  (result == expected).all(), f"test_parse_not_all_zero_precip: expected {expected}, got {result}"
-
-    
-def main():
-    test_parse_precip_dtype()
-    test_parse_precip_trace()
-    test_parse_precip_zero()
-    test_parse_precip_dtype()
-    test_parse_all_zero_precip()
-    test_parse_not_all_zero_precip()
-    test_parse_dataframe_trace()
-    test_parse_dataframe_good()
-    test_parse_dataframe_zero()
-    test_altitude_conversion()
-    test_expected_range_relh()
-
-
-if __name__ == "__main__":
-    main()
