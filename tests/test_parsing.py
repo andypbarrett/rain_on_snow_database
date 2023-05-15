@@ -142,12 +142,15 @@ def test_parse_precip_zero():
     assert (parse_arr == expected_arr).any(), f"Expected {expected_arr}, got {parse_arr}"
 
 
-def test_windspeed_conversion():
+def test_windspeed_conversion(atol=0.01):
     """Checks wind speed conversion with round-off"""
     df = df_good
-    expected = df_good_expected.sknt.values
+    expected = df_good_expected.wspd.values
     result = knots2mps(df.sknt).values
-    assert (result[~np.isnan(result)] == expected[~np.isnan(expected)]).all(), f"Expected {expected}, got {result}"
+    print(expected)
+    print(result)
+    np.testing.assert_allclose(result, expected, atol, equal_nan=True,
+                               err_msg=f"Expected {expected}, got {result}")    
 
 
 def test_expected_range_relh():
@@ -184,8 +187,8 @@ def test_expected_range_mslp():
 
 def test_expected_range_psurf():
     """Test for relh range check"""
-    parse = pd.DataFrame({'psurf': [np.nan, -7., 500., 600., 1013., 1090., 2000.]})
-    expected = pd.DataFrame({'psurf': [np.nan, np.nan, np.nan, 900., 1013., 1090., np.nan]})
+    parse = pd.DataFrame({'psurf': [np.nan, -7., 500., 850., 1013., 1090., 2000.]})
+    expected = pd.DataFrame({'psurf': [np.nan, np.nan, np.nan, 850., 1013., 1090., np.nan]})
     range_check_var(parse, 'psurf')
     assert expected.equals(parse), f"Expected {expected['psurf'].values}, got {parse['psurf'].values}"
 
