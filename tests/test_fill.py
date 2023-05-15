@@ -302,15 +302,15 @@ def test_remove_duplicate_records():
     assert clean_df.equals(test_df)
 
 
-def main():
-    test_one_missing()
-    test_two_missing()
-    test_the_same()
-    test_remove_duplicates_for_single_index()
-    #test_remove_duplicates_for_single_index_for_diff()
-    test_remove_duplicate_records()
+# def main():
+#     test_one_missing()
+#     test_two_missing()
+#     test_the_same()
+#     test_remove_duplicates_for_single_index()
+#     #test_remove_duplicates_for_single_index_for_diff()
+#     test_remove_duplicate_records()
     
 
-if __name__ == "__main__":
-    main()
+# if __name__ == "__main__":
+#     main()
 
