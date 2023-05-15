@@ -121,7 +121,7 @@ def remove_duplicate_records(df, ignore_fill_warnings=False):
     return df_cleaned
 
 
-def range_check_var(df, col):
+def range_check(df, col):
     """Checks values are with expected range for one variable"""
     expmin = expected_range[col]['min']
     expmax = expected_range[col]['max']
@@ -151,5 +151,5 @@ def qc_range_check(df: pd.DataFrame, verbose=False):
     for col in ['drct', 'p01i', 'mslp', 'psurf',
                 't2m', 'd2m', 'wspd', 'uwnd', 'vwnd']:
         if verbose: print(f"      Checking {col}")
-        range_check_var(df, col)
+        range_check(df, col)
     return

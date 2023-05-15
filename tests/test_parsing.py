@@ -8,8 +8,7 @@ from ros_database.processing.surface import (parse_iowa_mesonet_file,
                                              knots2mps,
                                              u_wind, v_wind,
                                              altitude_to_pressure)
-from ros_database.processing.cleaning import (range_check_var,
-                                              range_check_relh)
+from ros_database.processing.cleaning import range_check, range_check_relh
 
 
 index = pd.to_datetime(['2015-11-01 01:53:00',
@@ -165,7 +164,7 @@ def test_expected_range_drct():
     """Test for relh range check"""
     parse = pd.DataFrame({'drct': [np.nan, -7., 0., 180., 360., 361.]})
     expected = pd.DataFrame({'drct': [np.nan, np.nan, 0., 180., 360., np.nan]})
-    range_check_var(parse, 'drct')
+    range_check(parse, 'drct')
     assert expected.equals(parse), f"Expected {expected['drct'].values}, got {parse['drct'].values}"
 
 
@@ -173,7 +172,7 @@ def test_expected_range_p01i():
     """Test for relh range check"""
     parse = pd.DataFrame({'p01i': [np.nan, -7., 0., 50., 100., 500.]})
     expected = pd.DataFrame({'p01i': [np.nan, np.nan, 0., 50., 100., np.nan]})
-    range_check_var(parse, 'p01i')
+    range_check(parse, 'p01i')
     assert expected.equals(parse), f"Expected {expected['p01i'].values}, got {parse['p01i'].values}"
 
 
@@ -181,7 +180,7 @@ def test_expected_range_mslp():
     """Test for relh range check"""
     parse = pd.DataFrame({'mslp': [np.nan, -7., 500., 900., 1013., 1090., 2000.]})
     expected = pd.DataFrame({'mslp': [np.nan, np.nan, np.nan, 900., 1013., 1090., np.nan]})
-    range_check_var(parse, 'mslp')
+    range_check(parse, 'mslp')
     assert expected.equals(parse), f"Expected {expected['mslp'].values}, got {parse['mslp'].values}"
 
 
@@ -189,7 +188,7 @@ def test_expected_range_psurf():
     """Test for relh range check"""
     parse = pd.DataFrame({'psurf': [np.nan, -7., 500., 850., 1013., 1090., 2000.]})
     expected = pd.DataFrame({'psurf': [np.nan, np.nan, np.nan, 850., 1013., 1090., np.nan]})
-    range_check_var(parse, 'psurf')
+    range_check(parse, 'psurf')
     assert expected.equals(parse), f"Expected {expected['psurf'].values}, got {parse['psurf'].values}"
 
 
@@ -197,7 +196,7 @@ def test_expected_range_t2m():
     """Test for relh range check"""
     parse = pd.DataFrame({'t2m': [np.nan, -100., -70., 0., 20., 50., 70]})
     expected = pd.DataFrame({'t2m': [np.nan, np.nan, -70., 0., 20., 50., np.nan]})
-    range_check_var(parse, 't2m')
+    range_check(parse, 't2m')
     assert expected.equals(parse), f"Expected {expected['t2m'].values}, got {parse['t2m'].values}"
 
 
@@ -205,7 +204,7 @@ def test_expected_range_d2m():
     """Test for relh range check"""
     parse = pd.DataFrame({'d2m': [np.nan, -100., -70., 0., 20., 50., 70]})
     expected = pd.DataFrame({'d2m': [np.nan, np.nan, -70., 0., 20., 50., np.nan]})
-    range_check_var(parse, 'd2m')
+    range_check(parse, 'd2m')
     assert expected.equals(parse), f"Expected {expected['d2m'].values}, got {parse['d2m'].values}"
 
 
@@ -213,7 +212,7 @@ def test_expected_range_wspd():
     """Test for relh range check"""
     parse = pd.DataFrame({'wspd': [np.nan, -100., 0., 50., 103., 200.]})
     expected = pd.DataFrame({'wspd': [np.nan, np.nan, 0., 50., 103., np.nan]})
-    range_check_var(parse, 'wspd')
+    range_check(parse, 'wspd')
     assert expected.equals(parse), f"Expected {expected['wspd'].values}, got {parse['wspd'].values}"
 
 
@@ -221,7 +220,7 @@ def test_expected_range_uwnd():
     """Test for relh range check"""
     parse = pd.DataFrame({'uwnd': [np.nan, -200., -103., 0., 103., 200.]})
     expected = pd.DataFrame({'uwnd': [np.nan, np.nan, -103., 0., 103., np.nan]})
-    range_check_var(parse, 'uwnd')
+    range_check(parse, 'uwnd')
     assert expected.equals(parse), f"Expected {expected['uwnd'].values}, got {parse['uwnd'].values}"
 
 
@@ -229,7 +228,7 @@ def test_expected_range_vwnd():
     """Test for relh range check"""
     parse = pd.DataFrame({'vwnd': [np.nan, -200., -103., 0., 103., 200.]})
     expected = pd.DataFrame({'vwnd': [np.nan, np.nan, -103., 0., 103., np.nan]})
-    range_check_var(parse, 'vwnd')
+    range_check(parse, 'vwnd')
     assert expected.equals(parse), f"Expected {expected['vwnd'].values}, got {parse['vwnd'].values}"
 
 
