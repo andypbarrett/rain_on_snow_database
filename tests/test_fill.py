@@ -203,7 +203,7 @@ diff_missing_expected = pd.DataFrame(
     [
         ["PATK", 32.0, 32.0, 100.0, 0.0, 0.0, 0.01, 29.07, np.nan, "-SN BR"],
     ],
-    index=index, columns=columns)
+    index=[index[0]], columns=columns)
 
 the_same = pd.DataFrame(
     [
