@@ -286,7 +286,12 @@ def test_remove_duplicates_for_single_index():
 
 
 def test_remove_duplicates_for_single_index_for_diff():
-    assert diff_missing_expected.equals(remove_duplicate_for_index(diff_missing))
+    target = diff_missing_expected
+    result = remove_duplicate_for_index(diff_missing)
+    print(target)
+    print(result)
+    assert target.equals(result)
+
 
 def test_remove_duplicate_records():
     raw_df = read_test_data(raw_data)
