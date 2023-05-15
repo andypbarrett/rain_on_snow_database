@@ -8,6 +8,7 @@ Convert to SI units
 import warnings
 
 import pandas as pd
+import numpy as np
 
 from ros_database.processing.surface import (read_iowa_mesonet_file,
                                              parse_iowa_mesonet_file)
@@ -57,12 +58,17 @@ def clean_iowa_mesonet_asos_station(station_path, verbose=False,
     return
 
 
-def clean_mesonet_data(verbose=False, ignore_fill_warnings=False):
+def clean_mesonet_data(verbose=False, ignore_fill_warnings=False, nstations=None):
     """Cleans all stations in raw/all_stations directory
 
     :verbose: verbose output
     """
     filepaths = SURFOBS_CONCAT_PATH.glob("*.csv")
+
+    if nstations:
+        if verbose: print(f"Selecting {nstations} stations for testing")
+        rng = np.random.default_rng(12345)
+        filepaths = rng.choice(list(filepaths), nstations)
 
     if verbose: print("Cleaning mesonet observation data")
     for fp in filepaths:
@@ -76,8 +82,11 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(description="For each station in database, removes "
                                      "duplicate records, parses records and converts units")
+    parser.add_argument("--nstations", "-n", type=int,
+                        help="For testing: number of stations to process")
     parser.add_argument("--verbose", help="verbose output", action="store_true")
     parser.add_argument("--ignore_fill_warnings", help="silence warnings", action="store_true")
 
     args = parser.parse_args()
-    clean_mesonet_data(verbose=args.verbose, ignore_fill_warnings=args.ignore_fill_warnings)
+    clean_mesonet_data(verbose=args.verbose, ignore_fill_warnings=args.ignore_fill_warnings,
+                       nstations=args.nstations)
