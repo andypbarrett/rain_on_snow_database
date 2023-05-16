@@ -6,6 +6,7 @@ Remove rows where all NaN, except ID
 Convert to SI units
 """
 import warnings
+import shutil
 
 import pandas as pd
 import numpy as np
@@ -60,7 +61,7 @@ def clean_iowa_mesonet_asos_station(station_path, verbose=False,
 
 
 def clean_mesonet_data(verbose=False, ignore_fill_warnings=False, nstations=None,
-                       create_outpath=False):
+                       create_outpath=False, make_test_data=False):
     """Cleans all stations in raw/all_stations directory
 
     :verbose: verbose output
@@ -91,6 +92,12 @@ def clean_mesonet_data(verbose=False, ignore_fill_warnings=False, nstations=None
         clean_iowa_mesonet_asos_station(fp, verbose=verbose,
                                         ignore_fill_warnings=ignore_fill_warnings)
 
+    if make_test_data:
+        if verbose: print(f"Copying data for testing to ~/data/test_data")
+        for src in SURFOBS_CLEAN_PATH.glob('*.clean.csv'):
+            dst = "data/test_data"
+            shutil.copy2(src, dst)
+
 
 if __name__ == "__main__":
     import argparse
@@ -101,7 +108,9 @@ if __name__ == "__main__":
                         help="For testing: number of stations to process")
     parser.add_argument("--verbose", help="verbose output", action="store_true")
     parser.add_argument("--ignore_fill_warnings", help="silence warnings", action="store_true")
+    parser.add_argument("--make_test_data", help="copies test data to directory in repo",
+                        action="store_true")
 
     args = parser.parse_args()
     clean_mesonet_data(verbose=args.verbose, ignore_fill_warnings=args.ignore_fill_warnings,
-                       nstations=args.nstations)
+                       nstations=args.nstations, make_test_data=args.make_test_data)
