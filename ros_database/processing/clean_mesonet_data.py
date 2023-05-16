@@ -42,8 +42,9 @@ def clean_iowa_mesonet_asos_station(station_path, verbose=False,
 
     if verbose: print(f"    Loading data for {station_path}")
     df = read_iowa_mesonet_file(station_path, usecols=None)
+    
     outpath = f"{SURFOBS_CLEAN_PATH / station_path.stem}.clean.csv"
-
+    
     if verbose: print("    Removing duplicate records...")
     df_cleaned = remove_duplicate_records(df, ignore_fill_warnings=ignore_fill_warnings)
     if verbose: print("    Parsing records, and converting units")
@@ -58,14 +59,28 @@ def clean_iowa_mesonet_asos_station(station_path, verbose=False,
     return
 
 
-def clean_mesonet_data(verbose=False, ignore_fill_warnings=False, nstations=None):
+def clean_mesonet_data(verbose=False, ignore_fill_warnings=False, nstations=None,
+                       create_outpath=False):
     """Cleans all stations in raw/all_stations directory
 
     :verbose: verbose output
     """
     filepaths = SURFOBS_CONCAT_PATH.glob("*.csv")
 
+    if not SURFOBS_CLEAN_PATH.exists(): 
+        print(f"Directory for cleaned data {SURFOBS_CLEAN_PATH} does not exist")
+        if not create_outpath:
+            if input("Create it [yn]?") == "n": 
+                print("An output path must exist!  Either create one from the command line, "
+                      "rerun clean_mesonet_data with --create_outpath True, \n\n"
+                      "   clean_mesonet_data --create_outpath True\n\n"
+                      "or rerun and answer y to Create it [yn]?")
+                return
+        if verbose: print(f"Creating {SURFOBS_CLEAN_PATH}")
+        SURFOBS_CLEAN_PATH.mkdir()
+
     if nstations:
+        # Add select from different networks
         if verbose: print(f"Selecting {nstations} stations for testing")
         rng = np.random.default_rng(12345)
         filepaths = rng.choice(list(filepaths), nstations)
