@@ -9,6 +9,9 @@ setup(
     install_requires=[
         'pytest',
         ],
+    scripts=[
+        'ros_database/processing/clean_mesonet_data.py',
+        ],
     license=open('LICENSE').read(),
     description='A package to generate a rain on snow database for the AROSS project',
     long_description=open('README.md').read(),
