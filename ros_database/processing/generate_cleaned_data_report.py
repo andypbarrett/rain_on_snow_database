@@ -43,4 +43,62 @@ def data_and_ptype(df, columns=required_columns):
 
 
 # From notebook
+def is_precip(df):
+    """Returns a boolean Series with True if precip"""
+    return df.p01i > 0.
 
+
+def is_zero_precip(df):
+    """Returns a boolean series with True is precip is zero"""
+    return np.isclose(0., df.p01i, atol=0.1)
+    
+    
+def precip_isnan(df):
+    """Returns a boolean series with True for precip is nan"""
+    return df.p01i.isna()
+
+
+def count_precip_events(df):
+    """Counts non-zero precipitation"""
+    return is_precip(df).sum()
+
+
+def is_trace(df, trace=0.2):
+    """Returns a boolean array with True if trace precip"""
+    return np.isclose(trace, df.p01i, atol=0.01)
+
+    
+def count_trace_precip(df, trace=0.2):
+    """Count trace precipitation events"""
+    return is_trace(df).sum()
+
+
+def any_ptype(df):
+    """Returns a boolean array with True if trace precip"""
+    columns = ['UP', 'FZRA', 'RA', 'SOLID']
+    return df[columns].any(axis=1)
+
+    
+def count_any_ptype(df):
+    """Counts timestamps with at least one precipitation type recorded"""
+    return any_ptype(df).sum()
+
+
+def count_ptype_with_precip(df):
+    """Counts precipitation events that have a p-type"""
+    return  (is_precip(df) & any_ptype(df)).sum()
+
+
+def count_ptype_with_trace(df):
+    """Counts trace events that have a ptype"""
+    return (is_trace(df) & any_ptype(df)).sum()
+
+
+def count_ptype_with_zero_precip(df):
+    """Counts recorded ptypes with zero preciptation"""
+    return (is_zero_precip(df) & any_ptype(df)).sum()
+
+
+def count_ptype_with_precip_isnan(df):
+    """Counts recorded ptypes with nan precip"""
+    return (precip_isnan(df) & any_ptype(df)).sum()
