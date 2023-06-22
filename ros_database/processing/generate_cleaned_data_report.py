@@ -37,13 +37,13 @@ def get_date_range(df):
     return df.index().min(), df.index().max()
 
 
-def any_ptype(df)
+def any_ptype(df):
     """Returns a boolean array with True if trace precip"""
     columns = ['UP', 'FZRA', 'RA', 'SOLID']
     return df[columns].any(axis=1)
 
 
-def data_and_ptype(df, columns=required_columns):
+def data_and_ptype(df, columns=REQUIRED_COLUMNS):
     """Returns boolean series with True for all required columns
     and at least one ptype"""
 
@@ -115,8 +115,9 @@ def count_ptype_with_precip_isnan(df):
 def generate_cleaned_data_report():
     """Creates a inventory report for cleaned data"""
 
-    for fp in SURFOBS_CLEAN_PATH.glob('*,clean.csv'):
-        print(fp)
+    for fp in SURFOBS_CLEAN_PATH.glob('*.clean.csv'):
+        df = load_station_combined_data(fp)
+        print(f"{fp} {is_duplicate_records(df)}")
 
 
 if __name__ == "__main__":
