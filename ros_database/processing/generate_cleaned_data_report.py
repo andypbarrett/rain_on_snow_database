@@ -123,7 +123,9 @@ def generate_cleaned_data_report():
 
     for fp in SURFOBS_CLEAN_PATH.glob('*.clean.csv'):
         df = load_station_combined_data(fp)
-        print(f"{fp} {is_duplicate_records(df)}")
+        print(f"{fp}, {count_records(df):6d}, "
+              f"{date_range_to_string(df)}, "
+              f"{is_duplicate_records(df)}")
 
 
 if __name__ == "__main__":
