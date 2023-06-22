@@ -2,6 +2,8 @@
 
 This is to check processing and is not required.
 """
+from ros_database.filepath import SURFOBS_CLEAN_PATH
+
 
 def is_duplicate_records(df):
     return (df.duplicated() & df.index.duplicated()).any()
@@ -102,3 +104,16 @@ def count_ptype_with_zero_precip(df):
 def count_ptype_with_precip_isnan(df):
     """Counts recorded ptypes with nan precip"""
     return (precip_isnan(df) & any_ptype(df)).sum()
+
+
+
+
+def generate_cleaned_data_report():
+    """Creates a inventory report for cleaned data"""
+
+    for fp in SURFOBS_CLEAN_PATH.glob('*,clean.csv'):
+        print(fp)
+
+
+if __name__ == "__main__":
+    generate_cleaned_data_report()
