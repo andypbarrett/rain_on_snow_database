@@ -34,9 +34,15 @@ def count_columns_missing(df):
 
 
 def get_date_range(df):
-    return df.index().min(), df.index().max()
+    return df.index.min(), df.index.max()
 
 
+def date_range_to_string(df):
+    """Returns are string with the date range"""
+    tbeg, tend = get_date_range(df)
+    return f"{tbeg.strftime('%Y-%m-%d %H:%M:%S')}, {tend.strftime('%Y-%m-%d %H:%M:%S')}"
+
+    
 def any_ptype(df):
     """Returns a boolean array with True if trace precip"""
     columns = ['UP', 'FZRA', 'RA', 'SOLID']
