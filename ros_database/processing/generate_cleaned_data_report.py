@@ -3,7 +3,11 @@
 This is to check processing and is not required.
 """
 from ros_database.filepath import SURFOBS_CLEAN_PATH
+from ros_database.processing.surface import load_station_combined_data
 
+
+REQUIRED_COLUMNS = ['relh', 'drct', 'p01i', 'mslp', 't2m', 'd2m', 'wspd',
+                    'psurf', 'UP', 'RA', 'FZRA', 'SOLID', 'uwnd', 'vwnd']
 
 def is_duplicate_records(df):
     return (df.duplicated() & df.index.duplicated()).any()
