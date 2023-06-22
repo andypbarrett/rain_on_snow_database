@@ -40,7 +40,7 @@ def get_date_range(df):
 def date_range_to_string(df):
     """Returns are string with the date range"""
     tbeg, tend = get_date_range(df)
-    return f"{tbeg.strftime('%Y-%m-%d %H:%M:%S')}, {tend.strftime('%Y-%m-%d %H:%M:%S')}"
+    return f"{tbeg.isoformat()}, {tend.isoformat()}"
 
     
 def any_ptype(df):
