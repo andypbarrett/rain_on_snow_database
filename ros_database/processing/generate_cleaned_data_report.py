@@ -4,6 +4,7 @@ This is to check processing and is not required.
 """
 import warnings
 
+import numpy as np
 #from pandas.errors import DtypeWarning
 
 from ros_database.filepath import SURFOBS_CLEAN_PATH
@@ -80,7 +81,9 @@ def count_precip_events(df):
 
 
 def is_trace(df, trace=0.2):
-    """Returns a boolean array with True if trace precip"""
+    """Returns a boolean array with True if trace precip
+
+    ! not sure why I use allclose instead of <!"""
     return np.isclose(trace, df.p01i, atol=0.01)
 
     
@@ -90,7 +93,7 @@ def count_trace_precip(df, trace=0.2):
 
 
 def any_ptype(df):
-    """Returns a boolean array with True if trace precip"""
+    """Returns a boolean array with True if any precip type columns is True"""
     columns = ['UP', 'FZRA', 'RA', 'SOLID']
     return df[columns].any(axis=1)
 
