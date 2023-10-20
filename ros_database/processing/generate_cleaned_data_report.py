@@ -2,6 +2,10 @@
 
 This is to check processing and is not required.
 """
+import warnings
+
+#from pandas.errors import DtypeWarning
+
 from ros_database.filepath import SURFOBS_CLEAN_PATH
 from ros_database.processing.surface import load_station_combined_data
 
@@ -121,9 +125,11 @@ def count_ptype_with_precip_isnan(df):
 def generate_cleaned_data_report():
     """Creates a inventory report for cleaned data"""
 
+    warnings.simplefilter("ignore")
+    
     for fp in SURFOBS_CLEAN_PATH.glob('*.clean.csv'):
         df = load_station_combined_data(fp)
-        print(f"{fp}, {count_records(df):6d}, "
+        print(f"{fp.name}, {count_records(df):6d}, "
               f"{date_range_to_string(df)}, "
               f"{is_duplicate_records(df)}")
 
