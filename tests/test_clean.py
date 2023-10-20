@@ -14,10 +14,10 @@ from ros_database.processing.surface import (read_iowa_mesonet_file,
 from ros_database.processing.cleaning import (remove_duplicate_records,
                                               qc_range_check)
 
-TEST_PATH = Path('tests')
+TEST_PATH = Path('./tests')
 
 
-def test_one_case(station_path, verbose=True, write_cleaned=True):
+def one_case(station_path, verbose=True, write_cleaned=True):
     """Mimics clean_iowa_mesonet_asos_station but outputs a human readable
        file"""
 
@@ -43,25 +43,16 @@ def test_one_case(station_path, verbose=True, write_cleaned=True):
 def test_raw_input(write_cleaned=True):
     """Test code for simple case"""
     test_file = TEST_PATH / "test_data_raw.csv"
-    test_one_case(test_file, verbose=True, write_cleaned=write_cleaned)
+    one_case(test_file, verbose=True, write_cleaned=write_cleaned)
 
 
 def test_trace_precip_input(write_cleaned=True):
     """Test code for simple case"""
     test_file = TEST_PATH / "test_data_with_trace.csv"
-    test_one_case(test_file, verbose=True, write_cleaned=write_cleaned)
+    one_case(test_file, verbose=True, write_cleaned=write_cleaned)
 
 
 def test_zero_precip_input(write_cleaned=True):
     """Test code for simple case"""
     test_file = TEST_PATH / "test_data_all_zero.csv"
-    test_one_case(test_file, verbose=True, write_cleaned=write_cleaned)
-
-
-if __name__ == "__main__":
-    write_cleaned=True
-    test_raw_input(write_cleaned=write_cleaned)
-    print("-"*30+"\n")
-    test_trace_precip_input(write_cleaned=write_cleaned)
-    print("-"*30+"\n")
-    test_zero_precip_input(write_cleaned=write_cleaned)
+    one_case(test_file, verbose=True, write_cleaned=write_cleaned)

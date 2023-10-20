@@ -121,11 +121,17 @@ def remove_duplicate_records(df, ignore_fill_warnings=False):
     return df_cleaned
 
 
-def range_check_var(df, col):
-    """Checks values are with expected range for one variable"""
-    expmin = expected_range[col]['min']
-    expmax = expected_range[col]['max']
-    df[col].where((df[col] >= expmin) & (df[col] <= expmax), inplace=True)
+def range_check(df, varname):
+    """Sets values outside of expected range for a variable to NaN
+
+    :df: (pandas.DataFrame) containing variables
+    :varname: (string) name of variable
+
+    :returns: does replacement in place
+    """
+    expmin = expected_range[varname]['min']
+    expmax = expected_range[varname]['max']
+    df[varname].where((df[varname] >= expmin) & (df[varname] <= expmax), inplace=True)
     return
 
     
@@ -151,5 +157,5 @@ def qc_range_check(df: pd.DataFrame, verbose=False):
     for col in ['drct', 'p01i', 'mslp', 'psurf',
                 't2m', 'd2m', 'wspd', 'uwnd', 'vwnd']:
         if verbose: print(f"      Checking {col}")
-        range_check_var(df, col)
+        range_check(df, col)
     return
