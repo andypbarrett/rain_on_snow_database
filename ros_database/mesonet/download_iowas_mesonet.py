@@ -53,9 +53,17 @@ def create_download_uri(station, start_date, end_date):
 
 
 
-def make_outfilename(station, start_date, end_date):
-    """Create a filepath for output"""
-    return OUTPATH / f"{station}.{start_date.strftime('%Y%m%d')}to{end_date.strftime('%Y%m%d')}.txt"
+def make_outfilename(station_id, start_date, end_date, outpath):
+    """Create a filepath for output
+
+    station : for letter station id
+    start_date : datetime.datetime containing start date of record 
+    end_date : datetime.datetime containing end date of record
+    outpath : pathlib.Path object containing output path
+    
+    returns : pathlib.Path object containing file path for output
+    """
+    return outpath / f"{station_id}.{start_date.strftime('%Y%m%d')}to{end_date.strftime('%Y%m%d')}.txt"
 
 
 def fetch_data(uri):
