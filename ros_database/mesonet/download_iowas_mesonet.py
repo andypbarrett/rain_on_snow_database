@@ -112,20 +112,17 @@ def download_station(station, year=None, start="1900-01-01", end=None,
     :verbose: verbose output
     """
     # timestamps in UTC to request data for
-    date_now = dt.datetime.now()
+    date_now = dt.datetime.today()
     if year:
         start_date = dt.datetime(year, 1, 1)
         end_date = dt.datetime(year, 12, 31)
     else:
         start_date = dt.datetime.strptime(start, "%Y-%m-%d")
-        if end == "now":
-            end_date = date_now
+        if end:
+            end_date = min(date_now, dt.datetime.strptime(end, "%Y-%m-%d"))
         else:
-            end_date = dt.datetime.strptime(end, "%Y-%m-%d")
+            end_date = date_now
 
-    if end_date > date_now:
-        end_date = date_now
-        
     uri = create_download_uri(station, start_date, end_date)
     
     if verbose: print(f"Downloading: {station} "
