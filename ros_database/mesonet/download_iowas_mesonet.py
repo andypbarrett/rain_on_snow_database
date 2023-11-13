@@ -100,7 +100,8 @@ def write_data(data, outfn):
     return
 
 
-def download_station(station, year=None, start="2000-01-01", end="2021-12-31", verbose=False):
+def download_station(station, year=None, start="1900-01-01", end=None,
+                     outpath='.', verbose=False):
     """Download data for a station for a given time period
 
     :station: str station identifier e.g. PADK
@@ -132,7 +133,7 @@ def download_station(station, year=None, start="2000-01-01", end="2021-12-31", v
                       f"{end_date.strftime('%Y-%m-%d')}")
     data = fetch_data(uri)
     
-    outfn = make_outfilename(station, start_date, end_date)
+    outfn = make_outfilename(station, start_date, end_date, outpath)
     if verbose: print(f"Writing data to {outfn}")
     write_data(data, outfn)
     return
