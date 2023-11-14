@@ -35,18 +35,6 @@ api but data can be downloaded from their
 Python scripts for downloading raw datafiles and metadata are
 described below (See Recreating or updating the database).
 
-__Originally data for each station were dowloaded in individual files
-for the September to April period, one file for each annual period.
-To make file loading easier, and to future-proof code so that it can
-be run on files in which data for a multi-year period of record for a
-single station can be processed, annual files are concatenated into
-one file for each station. These are in the
-/PATH/TO/DATABASE/raw/all_stations directory.__
-
-Concatenation is done by `concatenate_station_files.py`
-```
-$ python -m ros_database.processing.concatenate_station_files
-```
 
 ### Data cleaning
 
