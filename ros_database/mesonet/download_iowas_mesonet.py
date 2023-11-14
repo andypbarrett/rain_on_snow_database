@@ -1,10 +1,23 @@
 """
-Test download script to download IOWA mesonet ASOS data
+Functions to download IOWA mesonet ASOS data
+
+TODO: Add code to update and append records
+
+Something like this.
+
+In [12]: for fp in filepaths:
+    ...:     station = fp.stem.split('.')[0]
+    ...:     with fp.open("r") as f:
+    ...:         first_record, last_record = get_period_of_record(f.readlines())
+    ...:     modified = dt.datetime.fromtimestamp(fp.lstat().st_mtime)
+    ...:     print(f"{station}, {first_record}, {last_record}, {modified}")
+
 """
 from __future__ import print_function
 import json
 import time
 import datetime as dt
+import re
 from pathlib import Path
 
 from urllib.request import urlopen
@@ -35,6 +48,7 @@ def get_stations_from_filelist(filename):
     TBD: Add station name as well as id - could be just station inventory list
     """
     stations = []
+    
     for line in open(filename):
         stations.append(line.strip())
     return stations
@@ -98,6 +112,18 @@ def write_data(data, outfn):
     out.write(data)
     out.close()
     return
+
+
+def get_record_timestamp(record):
+    """Returns the valid date of a record as a datetime object"""
+    return dt.datetime.strptime(record.split(",")[1], "%Y-%m-%d %H:%M")
+
+
+def get_period_of_record(data):
+    """Returns a the time of first and last record in downloaded data"""
+    p = re.compile("^[A-Z]{4},")
+    timestamp = [get_record_timestamp(rec) for rec in data if p.match(rec)]
+    return min(timestamp), max(timestamp)
 
 
 def download_station(station, year=None, start="1900-01-01", end=None,
