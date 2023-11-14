@@ -10,13 +10,12 @@ import shutil
 
 from pathlib import Path
 
+from tqdm import tqdm
+
 import pandas as pd
 import numpy as np
 
-from ros_database.processing.surface import (read_iowa_mesonet_file,
-                                             parse_iowa_mesonet_file)
-from ros_database.processing.cleaning import (remove_duplicate_records,
-                                              qc_range_check)
+from ros_database.processing.clean_mesonet_data import clean_iowa_mesonet_asos_station
 from ros_database.filepath import SURFOBS_RAW_PATH, SURFOBS_CLEAN_PATH
 
 # Suppresses FutureWarning about conflict in how strings and scalars are compared
@@ -96,11 +95,12 @@ def clean_mesonet_data(stations, all_stations=False, raw_path=None, outpath=None
                   "to create automatically")
 
     if progress:
-        filepaths = tdqm(filepaths)
+        filepaths = tqdm(filepaths)
 
     if verbose: print("Cleaning mesonet observation data")
     for fp in filepaths:
         if verbose: print(f"Cleaning {fp}")
+        if progress: filepaths.set_description(f"Cleaning {fp}")
         clean_iowa_mesonet_asos_station(fp, verbose=verbose,
                                         ignore_fill_warnings=ignore_fill_warnings)
 
