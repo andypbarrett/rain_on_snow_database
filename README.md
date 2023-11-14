@@ -113,10 +113,33 @@ Precipitation type from weather codes (UP, RA, FZRA, SOLID) are boolean.
 
 ## Recreating or updating the database
 
-If necessary, the database can be recreated using the following workflow and scripts
+The database can be recreated using the following workflow and scripts
 
-1. Download the metadata and data from IEM
-   - python -m ros_database.mesonet.make_mesonet_metadata
+1. Download data from IEM
+```
+python -m scripts.download_asos_data --progress --station_file data/stations.for_download.txt --outpath /Path/to/save/raw/files
+```
+This downloads all files in `stations.for_download.txt` for the station period of record.  The `--progress` flag displays a progress bar.
+
+Individual stations can be downloaded by providing the station id
+```
+python -m scripts.download_asos_data --progress --outpath /Path/to/save/raw/files PALP
+```
+
+The temporal range can be set in two ways.  By selecting data for a given year.
+```
+python -m scripts.download_asos_data --progress --outpath /Path/to/save/raw/files --year 2023 PALP
+```
+
+Or by setting the start and end dates.
+```
+python -m scripts.download_asos_data --progress --outpath /Path/to/save/raw/files --start 2023-10-01 --end 2024-04-30 PALP
+```
+
+
+2. Clean files
+
+- python -m ros_database.mesonet.make_mesonet_metadata
    - To update the metadata set `--clobber` flag.
    
 Add NSF badge
