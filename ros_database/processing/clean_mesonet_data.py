@@ -11,7 +11,7 @@ import shutil
 import pandas as pd
 import numpy as np
 
-from ros_database.processing.surface import (read_iowa_mesonet_file,
+from ros_database.processing.surface import (read_mesonet_raw_file,
                                              parse_iowa_mesonet_file)
 from ros_database.processing.cleaning import (remove_duplicate_records,
                                               qc_range_check)
@@ -25,6 +25,7 @@ from ros_database.filepath import SURFOBS_CONCAT_PATH, SURFOBS_CLEAN_PATH
 warnings.simplefilter(action='ignore', category=FutureWarning)
 
 def clean_iowa_mesonet_asos_station(station_path, verbose=False,
+                                    outpath=SURFOBS_CLEAN_PATH,
                                     ignore_fill_warnings=False):
     """Cleans raw Iowa Mesonet ASOS data for a single station.  All data files for a single
     station are combined.  Duplicate data records are removed.  Fields are converted
@@ -42,9 +43,9 @@ def clean_iowa_mesonet_asos_station(station_path, verbose=False,
     """
 
     if verbose: print(f"    Loading data for {station_path}")
-    df = read_iowa_mesonet_file(station_path, usecols=None)
-    
-    outpath = f"{SURFOBS_CLEAN_PATH / station_path.stem}.clean.csv"
+    df = read_mesonet_raw_file(station_path)
+
+    out_filepath = f"{outpath / station_path.stem}.clean.csv"
     
     if verbose: print("    Removing duplicate records...")
     df_cleaned = remove_duplicate_records(df, ignore_fill_warnings=ignore_fill_warnings)
@@ -55,62 +56,8 @@ def clean_iowa_mesonet_asos_station(station_path, verbose=False,
     qc_range_check(df_parsed)
     
     if verbose: print(f"    Writing cleaned data to {outpath}") 
-    df_parsed.to_csv(outpath)
+    df_parsed.to_csv(out_filepath)
 
     return
 
 
-def clean_mesonet_data(verbose=False, ignore_fill_warnings=False, nstations=None,
-                       create_outpath=False, make_test_data=False):
-    """Cleans all stations in raw/all_stations directory
-
-    :verbose: verbose output
-    """
-    filepaths = SURFOBS_CONCAT_PATH.glob("*.csv")
-
-    if not SURFOBS_CLEAN_PATH.exists(): 
-        print(f"Directory for cleaned data {SURFOBS_CLEAN_PATH} does not exist")
-        if not create_outpath:
-            if input("Create it [yn]?") == "n": 
-                print("An output path must exist!  Either create one from the command line, "
-                      "rerun clean_mesonet_data with --create_outpath True, \n\n"
-                      "   clean_mesonet_data --create_outpath True\n\n"
-                      "or rerun and answer y to Create it [yn]?")
-                return
-        if verbose: print(f"Creating {SURFOBS_CLEAN_PATH}")
-        SURFOBS_CLEAN_PATH.mkdir()
-
-    if nstations:
-        # Add select from different networks
-        if verbose: print(f"Selecting {nstations} stations for testing")
-        rng = np.random.default_rng(12345)
-        filepaths = rng.choice(list(filepaths), nstations)
-
-    if verbose: print("Cleaning mesonet observation data")
-    for fp in filepaths:
-        if verbose: print(f"Processing {fp}")
-        clean_iowa_mesonet_asos_station(fp, verbose=verbose,
-                                        ignore_fill_warnings=ignore_fill_warnings)
-
-    if make_test_data:
-        if verbose: print(f"Copying data for testing to ~/data/test_data")
-        for src in SURFOBS_CLEAN_PATH.glob('*.clean.csv'):
-            dst = "data/test_data"
-            shutil.copy2(src, dst)
-
-
-if __name__ == "__main__":
-    import argparse
-
-    parser = argparse.ArgumentParser(description="For each station in database, removes "
-                                     "duplicate records, parses records and converts units")
-    parser.add_argument("--nstations", "-n", type=int,
-                        help="For testing: number of stations to process")
-    parser.add_argument("--verbose", help="verbose output", action="store_true")
-    parser.add_argument("--ignore_fill_warnings", help="silence warnings", action="store_true")
-    parser.add_argument("--make_test_data", help="copies test data to directory in repo",
-                        action="store_true")
-
-    args = parser.parse_args()
-    clean_mesonet_data(verbose=args.verbose, ignore_fill_warnings=args.ignore_fill_warnings,
-                       nstations=args.nstations, make_test_data=args.make_test_data)
