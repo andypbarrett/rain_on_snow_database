@@ -25,6 +25,7 @@ from ros_database.filepath import SURFOBS_CONCAT_PATH, SURFOBS_CLEAN_PATH
 warnings.simplefilter(action='ignore', category=FutureWarning)
 
 def clean_iowa_mesonet_asos_station(station_path, verbose=False,
+                                    outpath=SURFOBS_CLEAN_PATH,
                                     ignore_fill_warnings=False):
     """Cleans raw Iowa Mesonet ASOS data for a single station.  All data files for a single
     station are combined.  Duplicate data records are removed.  Fields are converted
@@ -44,7 +45,7 @@ def clean_iowa_mesonet_asos_station(station_path, verbose=False,
     if verbose: print(f"    Loading data for {station_path}")
     df = read_mesonet_raw_file(station_path)
 
-    outpath = f"{SURFOBS_CLEAN_PATH / station_path.stem}.clean.csv"
+    out_filepath = f"{outpath / station_path.stem}.clean.csv"
     
     if verbose: print("    Removing duplicate records...")
     df_cleaned = remove_duplicate_records(df, ignore_fill_warnings=ignore_fill_warnings)
@@ -55,7 +56,7 @@ def clean_iowa_mesonet_asos_station(station_path, verbose=False,
     qc_range_check(df_parsed)
     
     if verbose: print(f"    Writing cleaned data to {outpath}") 
-    df_parsed.to_csv(outpath)
+    df_parsed.to_csv(out_filepath)
 
     return
 
