@@ -143,15 +143,6 @@ In the cleaning step, for each file: duplicate records are removed; data are par
 interpretted and units converted from Imperial/English to SI; a range check is used to exclude
 data values outside of reasonable observed limits.  Data are then written to csv files.
 
-```
-python -m scripts.clean_asos_data --progress --testing
-```
-
-```{Note}
-This will be removed once processing pipeline is finalized.
-In migrating code, some old code was overwritten.  To ensure that processing performs exactly
-the same, old cleaned files are compared against new cleaned files for the same raw files.  The `--testing` flag performs this test.
-
 For one file
 ```
 python -m scripts.clean_asos_data --progress PALP
@@ -162,11 +153,20 @@ For all files in the raw directory.
 python -m scripts.clean_asos_data --progress --all_stations
 ```
 
-Old and new files are then compared using `diff`.
-```
-for f in $clean_dir/*.csv; do bn=`basename $f`; diff $clean_dir/$bn $save_dir/$bn; done
-```
-```
+>[!Note]
+>This will be removed once processing pipeline is finalized.
+>In migrating code, some old code was overwritten.  To ensure that processing performs exactly
+>the same, old cleaned files are compared against new cleaned files for the same raw files.  The `--testing` flag performs this test.
+>
+>```
+>python -m scripts.clean_asos_data --progress --testing
+>```
+>
+>Old and new files are then compared using `diff`.
+>```
+>for f in $clean_dir/*.csv; do bn=`basename $f`; diff $clean_dir/$bn $save_dir/$bn; done
+>```
+
 - python -m ros_database.mesonet.make_mesonet_metadata
    - To update the metadata set `--clobber` flag.
    
