@@ -18,6 +18,9 @@ import numpy as np
 from ros_database.processing.clean_mesonet_data import clean_iowa_mesonet_asos_station
 from ros_database.filepath import SURFOBS_RAW_PATH, SURFOBS_CLEAN_PATH
 
+SURFOBS_RAW_TEST_PATH = Path(str(SURFOBS_RAW_PATH) + "_test")
+SURFOBS_CLEAN_TEST_PATH = Path(str(SURFOBS_CLEAN_PATH) + "_test")
+
 TEST_STATIONS = ['BGPT.20050101to20140724.txt',
                  'CYLT.19870305to20231020.txt',
                  'CYAB.20110113to20231021.txt',
@@ -101,14 +104,17 @@ def clean_mesonet_data(stations, all_stations=False, raw_path=None, outpath=None
     # Get filepaths for raw files
     if testing:
         # Just for testing. So that cleaning is duplicating old cleaned files
-        filepaths = [SURFOBS_RAW_PATH / fp for fp in TEST_STATIONS]
-    else:
-        try:
-            filepaths = get_raw_station_filepaths(stations, raw_path, all_stations)
-        except RuntimeError as err:
-            print("Either a list of station ids must be given or all_stations flag set")
-            print(err)
-            return
+        stations = []  # Make sure this is an empty list
+        raw_path = SURFOBS_RAW_TEST_PATH
+        all_stations = True
+        outpath = SURFOBS_CLEAN_TEST_PATH
+
+    try:
+        filepaths = get_raw_station_filepaths(stations, raw_path, all_stations)
+    except RuntimeError as err:
+        print("Either a list of station ids must be given or all_stations flag set")
+        print(err)
+        return
 
     if not outpath.exists():
         if create_outpath:
@@ -125,8 +131,9 @@ def clean_mesonet_data(stations, all_stations=False, raw_path=None, outpath=None
     if verbose: print("Cleaning mesonet observation data")
     for fp in filepaths:
         if verbose: print(f"Cleaning {fp}")
-        if progress: filepaths.set_description(f"Cleaning {fp}")
+        if progress: filepaths.set_description(f"Cleaning {fp.name}")
         clean_iowa_mesonet_asos_station(fp, verbose=verbose,
+                                        outpath=outpath,
                                         ignore_fill_warnings=ignore_fill_warnings)
 
 
