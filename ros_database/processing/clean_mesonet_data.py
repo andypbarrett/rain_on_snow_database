@@ -11,7 +11,7 @@ import shutil
 import pandas as pd
 import numpy as np
 
-from ros_database.processing.surface import (read_iowa_mesonet_file,
+from ros_database.processing.surface import (read_mesonet_raw_file,
                                              parse_iowa_mesonet_file)
 from ros_database.processing.cleaning import (remove_duplicate_records,
                                               qc_range_check)
@@ -42,8 +42,8 @@ def clean_iowa_mesonet_asos_station(station_path, verbose=False,
     """
 
     if verbose: print(f"    Loading data for {station_path}")
-    df = read_iowa_mesonet_file(station_path, usecols=None)
-    
+    df = read_mesonet_raw_file(station_path)
+
     outpath = f"{SURFOBS_CLEAN_PATH / station_path.stem}.clean.csv"
     
     if verbose: print("    Removing duplicate records...")

@@ -1,6 +1,9 @@
 """Functions to process surface observations"""
 import warnings
 
+from typing import Union, List
+from pathlib import Path
+
 import numpy as np
 
 import pandas as pd
@@ -92,6 +95,27 @@ def convert_dtype(x):
         return float(x)   
     except:        
         return str(x)
+
+
+def read_mesonet_raw_file(filepath: Union[Path, str],
+                          usecols: List[str] = USECOLS) -> pd.DataFrame:
+    """Reads a raw mesonet file downloaded from Uni. Iowa mesonet site
+
+    Parameters
+    ----------
+    filepath : path to raw file
+    usecols : list of column names to read from raw file.  Default list is defined
+        in usecols. 
+
+    Returns
+    -------
+    pandas.Dataframe containing raw data and columns defined in USECOLS
+    """
+    df = pd.read_csv(filepath, index_col='valid', parse_dates=True,
+                     usecols=usecols, comment="#",
+                     na_values=["M", ""], low_memory=False)
+    df.index.rename("datetime", inplace=True)
+    return df
 
 
 def read_iowa_mesonet_file(filepath, usecols=None, index_col=0):
