@@ -149,7 +149,7 @@ python -m scripts.clean_asos_data --progress --testing
 
 ```{Note}
 This will be removed once processing pipeline is finalized.
-In igrating code, some old code was overwritten.  To ensure that processing performs exactly
+In migrating code, some old code was overwritten.  To ensure that processing performs exactly
 the same, old cleaned files are compared against new cleaned files for the same raw files.  The `--testing` flag performs this test.
 
 For one file
@@ -166,7 +166,7 @@ Old and new files are then compared using `diff`.
 ```
 for f in $clean_dir/*.csv; do bn=`basename $f`; diff $clean_dir/$bn $save_dir/$bn; done
 ```
-
+```
 - python -m ros_database.mesonet.make_mesonet_metadata
    - To update the metadata set `--clobber` flag.
    
