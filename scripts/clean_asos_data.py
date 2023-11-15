@@ -18,6 +18,24 @@ import numpy as np
 from ros_database.processing.clean_mesonet_data import clean_iowa_mesonet_asos_station
 from ros_database.filepath import SURFOBS_RAW_PATH, SURFOBS_CLEAN_PATH
 
+TEST_STATIONS = ['BGPT.20050101to20140724.txt',
+                 'CYLT.19870305to20231020.txt',
+                 'CYAB.20110113to20231021.txt',
+                 'PAFM.19880105to20231022.txt',
+                 'EFET.19980419to20231022.txt',
+                 'BGAA.20010721to20140724.txt',
+                 'ESNX.19770701to20231022.txt',
+                 'ULAA.19310104to20230501.txt',
+                 'ENAT.19730101to20231022.txt',
+                 'EFHA.19730101to20231022.txt',
+                 'ESSD.19790802to20231022.txt',
+                 'UHMA.19331201to20231022.txt',
+                 'PALP.20020119to20231022.txt',
+                 'BIEG.19490101to20231022.txt',
+                 'BIAR.19310103to20231022.txt',
+                 'ENAL.19730101to20231022.txt']
+
+
 # Suppresses FutureWarning about conflict in how strings and scalars are compared
 # see: https://stackoverflow.com/questions/40659212/futurewarning-elementwise-comparison-failed-returning-scalar-but-in-the-futur
 # Using
@@ -40,7 +58,7 @@ def get_raw_station_filepaths(stations, raw_path, all_stations):
 
 def clean_mesonet_data(stations, all_stations=False, raw_path=None, outpath=None,
                        create_outpath=False, ignore_fill_warnings=False,
-                       verbose=False, progress=False):
+                       verbose=False, progress=False, testing=False):
     """Cleans raw data for stations in stations list if provided or for all stations in 
     raw_path if all_stations set to True.  Cleaned files are written to outpath.
 
@@ -68,22 +86,29 @@ def clean_mesonet_data(stations, all_stations=False, raw_path=None, outpath=None
         Show verbose output
     progress : bool
         Show progress bar.  If verbose and progress are both set, verbose if ignored.
+    testing : bool
+        Test on a subset of stations
 
     Returns
     -------
     None
     """
 
+        
     if progress and verbose:
         verbose = False
         
     # Get filepaths for raw files
-    try:
-        filepaths = get_raw_station_filepaths(stations, raw_path, all_stations)
-    except RuntimeError as err:
-        print("Either a list of station ids must be given or all_stations flag set")
-        print(err)
-        return
+    if testing:
+        # Just for testing. So that cleaning is duplicating old cleaned files
+        filepaths = [SURFOBS_RAW_PATH / fp for fp in TEST_STATIONS]
+    else:
+        try:
+            filepaths = get_raw_station_filepaths(stations, raw_path, all_stations)
+        except RuntimeError as err:
+            print("Either a list of station ids must be given or all_stations flag set")
+            print(err)
+            return
 
     if not outpath.exists():
         if create_outpath:
@@ -130,10 +155,13 @@ if __name__ == "__main__":
     parser.add_argument("--progress", action="store_true",
                         help=("displays a progress bar. If progress and verbose are "
                               "both set, verbose is ignored"))
+    parser.add_argument("--testing", action="store_true",
+                        help="Run on a set of test stations")
 
     args = parser.parse_args()
     clean_mesonet_data(args.stations, all_stations=args.all_stations,
                        raw_path=args.raw_path, outpath=args.outpath,
                        create_outpath=args.create_outpath,
                        ignore_fill_warnings=args.ignore_fill_warnings,
-                       verbose=args.verbose, progress=args.progress)
+                       verbose=args.verbose, progress=args.progress,
+                       testing=args.testing)
