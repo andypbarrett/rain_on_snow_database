@@ -5,19 +5,19 @@ from pandas.errors import DtypeWarning
 from ros_database.processing.surface import read_iowa_mesonet_file, get_hourly_obs
 
 
-def make_outpath(fp):
+def make_outpath(fp, outpath):
     """Returns output path for hourly files"""
-    outpath = '.'.join(fp.stem.split('.')[:-1]) + ".hourly.csv"
-    return SURFOBS_HOURLY_PATH / outpath
+    return outpath / '.'.join(fp.stem.split('.')[:-1]) + ".hourly.csv"
 
-def clean_to_hourly(filepath, verbose=False):
+
+def clean_to_hourly(filepath, outpath, verbose=False):
     """Resample cleaned file to hourly file
 
     :filepath: pathlib.Path POSIX path object
 
     :returns: None
     """
-    outpath = make_outpath(filepath) 
+    outpath = make_outpath(filepath, outpath) 
     
     if verbose: print(f"   Loading data from {filepath}...")
     # Some files through DTypeWarning this seems inconsequential
