@@ -7,7 +7,7 @@ from ros_database.processing.surface import read_iowa_mesonet_file, get_hourly_o
 
 def make_outpath(fp, outpath):
     """Returns output path for hourly files"""
-    return outpath / '.'.join(fp.stem.split('.')[:-1]) + ".hourly.csv"
+    return outpath / ('.'.join(fp.stem.split('.')[:-1]) + ".hourly.csv")
 
 
 def clean_to_hourly(filepath, outpath, verbose=False):
