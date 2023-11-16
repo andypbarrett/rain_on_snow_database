@@ -53,6 +53,6 @@ if __name__ == "__main__":
     
     args = parser.parse_args()
     
-    make_hourly_series(stations, all_stations=args.all_stations,
+    make_hourly_series(args.stations, all_stations=args.all_stations,
                        clean_path=args.clean_path, outpath=args.outpath,
                        verbose=args.verbose, progress=args.progress)
