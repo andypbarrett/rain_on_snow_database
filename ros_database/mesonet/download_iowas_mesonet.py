@@ -27,8 +27,6 @@ MAX_ATTEMPTS = 6
 # HTTPS here can be problematic for installs that don't have Lets Encrypt CA
 SERVICE = "http://mesonet.agron.iastate.edu/cgi-bin/request/asos.py?"
 
-# TODO Add way to check path has been set.  Notify and set default to .
-OUTPATH = Path('/projects/AROSS/Observations/Surface/raw_new/')
 
 def get_station_list(network):
     """Returns a list of stations in a network"""
@@ -122,12 +120,12 @@ def get_record_timestamp(record):
 def get_period_of_record(data):
     """Returns a the time of first and last record in downloaded data"""
     p = re.compile("^[A-Z]{4},")
-    timestamp = [get_record_timestamp(rec) for rec in data if p.match(rec)]
+    timestamp = [get_record_timestamp(rec) for rec in data.split("\n") if p.match(rec)]
     return min(timestamp), max(timestamp)
 
 
 def download_station(station, year=None, start="1900-01-01", end=None,
-                     outpath='.', verbose=False):
+                     outpath='.', verbose=False, dry_run=False):
     """Download data for a station for a given time period
 
     :station: str station identifier e.g. PADK
@@ -151,12 +149,17 @@ def download_station(station, year=None, start="1900-01-01", end=None,
 
     uri = create_download_uri(station, start_date, end_date)
     
-    if verbose: print(f"Downloading: {station} "
+    if verbose: print(f"Downloading: {station} for time span "
                       f"{start_date.strftime('%Y-%m-%d')} to "
                       f"{end_date.strftime('%Y-%m-%d')}")
     data = fetch_data(uri)
     
+    # Update start and end datetimes to period of record 
+    start_date, end_date = get_period_of_record(data)
+    
     outfn = make_outfilename(station, start_date, end_date, outpath)
     if verbose: print(f"Writing data to {outfn}")
+    if dry_run:
+        return
     write_data(data, outfn)
     return
