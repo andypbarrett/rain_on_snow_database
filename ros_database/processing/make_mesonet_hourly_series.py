@@ -3,7 +3,6 @@ import warnings
 from pandas.errors import DtypeWarning
 
 from ros_database.processing.surface import read_iowa_mesonet_file, get_hourly_obs
-from ros_database.filepath import SURFOBS_CLEAN_PATH, SURFOBS_HOURLY_PATH
 
 
 def make_outpath(fp):
@@ -35,19 +34,3 @@ def clean_to_hourly(filepath, verbose=False):
     return
 
 
-def make_mesonet_hourly_series(verbose=False):
-    """Resamples cleaned files to hourly"""
-    for fp in SURFOBS_CLEAN_PATH.glob("*.clean.csv"):
-        if verbose: print(f"Resampling {fp.stem}")
-        clean_to_hourly(fp, verbose=verbose)
-    return
-
-
-if __name__ == "__main__":
-    import argparse
-
-    parser = argparse.ArgumentParser(description="Resample cleaned files to hourly data")
-    parser.add_argument("--verbose", action="store_true")
-    args = parser.parse_args()
-    
-    make_mesonet_hourly_series(verbose=args.verbose)
