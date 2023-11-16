@@ -26,14 +26,34 @@ def make_hourly_series(stations: Union[str, List[str]],
     progress : display progress bar.  If verbose and progress both set, verbose is ignored
     """
 
-    # Add function to generate filelist, make common to all scripts
+    if progress and verbose:
+        verbose = False
 
-    # Add tdqm
-    return
+    try:
+        filepaths = get_station_filepaths(stations, clean_path,
+                                          all_stations, ext="clean.csv")
+    except RuntimeError as err:
+        print("Either a list of station ids must be given or all_stations flag set")
+        print(err)
+        return
 
-    for fp in clean_path.glob("*.clean.csv"):
-        if verbose: print(f"Resampling {fp.stem} to hourly series")
-        clean_to_hourly(fp, verbose=verbose)
+    if not outpath.exists():
+        if create_outpath:
+            print(f"Creating {outpath}")
+            outpath.mkdir()
+        else:
+            print(f"Directory for hourly series {outpath} does not exist\n"
+                  "Either create output directory or set create_outpath flag "
+                  "to create automatically")
+
+    if progress:
+        filepaths = tqdm(filepaths)
+
+    if verbose: print("Resampling cleaned files to create hourly series")
+    for fp in filepaths:
+        if verbose: print(f"Resampling {fp.stem}")
+        if progress: filepaths.set_description(f"Resampling {fp.name}")
+        clean_to_hourly(fp, outpath, verbose=verbose)  # Add args
     return
 
 
