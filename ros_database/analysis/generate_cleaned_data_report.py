@@ -3,6 +3,8 @@
 This is to check processing and is not required.
 """
 import warnings
+from typing import Union, List
+from pathlib import Path
 
 import numpy as np
 #from pandas.errors import DtypeWarning
@@ -123,8 +125,10 @@ def count_ptype_with_precip_isnan(df):
     return (precip_isnan(df) & any_ptype(df)).sum()
 
 
-
-
+def get_inventory(fp: Union[str, Path]) --> dict:
+    """Returns an inventory report for a single station"""
+    
+    
 def generate_cleaned_data_report():
     """Creates a inventory report for cleaned data"""
 
