@@ -97,7 +97,6 @@ def clean_mesonet_data(stations, all_stations=False, raw_path=None, outpath=None
     None
     """
 
-        
     if progress and verbose:
         verbose = False
         
