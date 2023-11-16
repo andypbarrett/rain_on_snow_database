@@ -167,7 +167,10 @@ python -m scripts.clean_asos_data --progress --all_stations
 >for f in $clean_dir/*.csv; do bn=`basename $f`; diff $clean_dir/$bn $save_dir/$bn; done
 >```
 
-- python -m ros_database.mesonet.make_mesonet_metadata
-   - To update the metadata set `--clobber` flag.
+3. Resample to hourly time series
+
+```
+python -m scripts.make_hourly_series --all_stations --progress
+```
    
 Add NSF badge
