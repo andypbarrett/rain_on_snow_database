@@ -3,22 +3,21 @@ import warnings
 from pandas.errors import DtypeWarning
 
 from ros_database.processing.surface import read_iowa_mesonet_file, get_hourly_obs
-from ros_database.filepath import SURFOBS_CLEAN_PATH, SURFOBS_HOURLY_PATH
 
 
-def make_outpath(fp):
+def make_outpath(fp, outpath):
     """Returns output path for hourly files"""
-    outpath = '.'.join(fp.stem.split('.')[:-1]) + ".hourly.csv"
-    return SURFOBS_HOURLY_PATH / outpath
+    return outpath / ('.'.join(fp.stem.split('.')[:-1]) + ".hourly.csv")
 
-def clean_to_hourly(filepath, verbose=False):
+
+def clean_to_hourly(filepath, outpath, verbose=False):
     """Resample cleaned file to hourly file
 
     :filepath: pathlib.Path POSIX path object
 
     :returns: None
     """
-    outpath = make_outpath(filepath) 
+    outpath = make_outpath(filepath, outpath) 
     
     if verbose: print(f"   Loading data from {filepath}...")
     # Some files through DTypeWarning this seems inconsequential
@@ -35,19 +34,3 @@ def clean_to_hourly(filepath, verbose=False):
     return
 
 
-def make_mesonet_hourly_series(verbose=False):
-    """Resamples cleaned files to hourly"""
-    for fp in SURFOBS_CLEAN_PATH.glob("*.clean.csv"):
-        if verbose: print(f"Resampling {fp.stem}")
-        clean_to_hourly(fp, verbose=verbose)
-    return
-
-
-if __name__ == "__main__":
-    import argparse
-
-    parser = argparse.ArgumentParser(description="Resample cleaned files to hourly data")
-    parser.add_argument("--verbose", action="store_true")
-    args = parser.parse_args()
-    
-    make_mesonet_hourly_series(verbose=args.verbose)

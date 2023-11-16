@@ -1,6 +1,8 @@
 '''Directory of and filepaths for processing data'''
 import socket
+from typing import Union, List
 from pathlib import Path
+
 
 # Get root data path depending on host
 host = socket.gethostname()
@@ -8,6 +10,7 @@ if host == "nsidc-617-abarrett":
     AROSS_PATH = Path("/home/apbarret/Data/AROSS/database")  # Needs sorting out
 else:
     AROSS_PATH = Path("/projects/AROSS")
+
 
 # ERA5 Reanalysis path    
 ERA5_DATAPATH = AROSS_PATH / "Reanalysis" / "ERA5"
@@ -52,3 +55,31 @@ CLIMATOLOGY_FILES = {
     "geopotential": ERA5_DATAPATH / "pressure_levels" / "daily" / "era5.geopotential.climatology.daily.nc",
     "specific_humidity": ERA5_DATAPATH / "pressure_levels" / "daily" / "era5.specific_humidity.climatology.daily.nc",
     }
+
+
+def get_station_filepaths(stations: List[str],
+                          path: Union[str, Path],
+                          all_stations: bool = False,
+                          ext: str = '*') -> List[Path]:
+    """Returns a list of Path objects to files in path
+
+    Parameters
+    ----------
+    stations : list of station ids
+    path : directory path to files
+    all_stations : if True will return all files in path with extension ext
+    ext : suffix for file glob
+
+    Returns
+    -------
+    A list of station files in path with extension extension
+    """
+    path = Path(path)
+    if stations:
+        filepaths = [next(path.glob(f"{stn}*{ext}")) for stn in stations]
+    elif all_stations:
+        filepaths = path.glob(f"*{ext}")
+    else:
+        raise RuntimeError("stations is empty list and all_stations is False")
+    return filepaths
+

@@ -5,14 +5,15 @@ from datetime import date
 
 from tqdm import tqdm
 
-from ros_database.mesonet.download_iowas_mesonet import (download_station, OUTPATH,
+from ros_database.filepath import SURFOBS_RAW_PATH
+from ros_database.mesonet.download_iowas_mesonet import (download_station, 
                                                          get_stations_from_filelist)
 
 
 def download_asos_data(years=None, stations=None, station_file=None,
                        start=None, end=None,
                        update=True, verbose=False, outpath=None,
-                       progress=False):
+                       progress=False, dry_run=False):
     """Downloads ASOS records from University of Iowa Mesonet site.
 
     Data are downloaded for each station by year.  For the current year, records 
@@ -28,6 +29,8 @@ def download_asos_data(years=None, stations=None, station_file=None,
              defined in OUTPATH is searched to generate a list of station records to
              update.  If no current files are found in OUTPATH an error is raised.
              years, stations and station_file are ignored if update=True.
+    dry_run : bool
+        does not write data file
     """
 
     # If both are set, verbose is set to False
@@ -35,7 +38,7 @@ def download_asos_data(years=None, stations=None, station_file=None,
         verbose=False
     
     if not outpath:
-        outpath = OUTPATH
+        outpath = SURFOBS_RAW_PATH
     else:
         outpath = Path(outpath)
 
@@ -64,7 +67,8 @@ def download_asos_data(years=None, stations=None, station_file=None,
             for year in years:
                 download_station(station, year=year, verbose=verbose, outpath=outpath)
         else:
-            download_station(station, start=start, end=end, verbose=verbose, outpath=outpath)
+            download_station(station, start=start, end=end, verbose=verbose, outpath=outpath,
+                             dry_run=dry_run)
 
         if verbose & (len(stations) > 1): print("\n")
 
@@ -99,11 +103,13 @@ if __name__ == "__main__":
     parser.add_argument("--progress", action="store_true",
                         help=("displays a progress bar. If progress and verbose are "
                               "both set, verbose is ignored"))
+    parser.add_argument("--dry_run", action="store_true",
+                        help="for testing.  Does not write new data file")
 
     args = parser.parse_args()
     
     download_asos_data(stations=args.stations, start=args.start, end=args.end,
                        years=args.year, outpath=args.outpath,
                        station_file=args.station_file, verbose=args.verbose,
-                       progress=args.progress)
+                       progress=args.progress, dry_run=args.dry_run)
 
