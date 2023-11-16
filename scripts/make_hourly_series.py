@@ -26,7 +26,11 @@ def make_hourly_series(stations: Union[str, List[str]],
     progress : display progress bar.  If verbose and progress both set, verbose is ignored
     """
 
-    
+    # Add function to generate filelist, make common to all scripts
+
+    # Add tdqm
+    return
+
     for fp in clean_path.glob("*.clean.csv"):
         if verbose: print(f"Resampling {fp.stem} to hourly series")
         clean_to_hourly(fp, verbose=verbose)
