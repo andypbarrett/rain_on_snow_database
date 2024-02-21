@@ -21,7 +21,7 @@ PM_PATH = AROSS_PATH / "Passive_microwave"
 # Path to Animation data
 ANIMATION_PATH = AROSS_PATH / "Animations"
 # Path to Surface Observations
-SURFOBS_PATH = AROSS_PATH / "observations" / "surface"  # /projects/AROSS is *S*urface
+SURFOBS_PATH = AROSS_PATH / "observations" / "surface"  / "version_2.0.0" # /projects/AROSS is *S*urface
 # Path to raw surface observation data
 SURFOBS_RAW_PATH = SURFOBS_PATH / "raw"
 # Path to concatenated files
