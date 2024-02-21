@@ -20,6 +20,8 @@ dependencies:
  - geopandas
  - aiohttp
  - pytest
+ - pip:
+     - /home/apbarret/src/nsidc_projections
 
  ##################################################
  # Possible dependencies to import                #
