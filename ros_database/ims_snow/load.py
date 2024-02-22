@@ -1,12 +1,22 @@
 """Loads IMS snow data from NOAA@NSIDC"""
+from typing import List, Union
+
 import re
 import datetime as dt
-from urllib.parse import urlparse
+
+from urllib.parse import urlparse, urlunparse
+from urllib.request import urlopen
+from urllib.error import HTTPError
+
+from collections import namedtuple
+
 import json
 from pathlib import Path
 import warnings
 
 import fsspec
+from fsspec.implementations.http import HTTPFileSystem
+
 import xarray
 
 
@@ -51,18 +61,52 @@ class IMSSnow:
         return self._catalog.get(date_str)
 
 
-def _build_catalog(fs, format, resolution):
-    """Builds a catalog for IMA data"""
-    url = URL + SEP if not URL.endswith(SEP) else URL
-    url = URL + format + SEP + resolution + SEP
-    files = [f for f in fs.find(url) if f.endswith('.nc.gz')]  # Only get netcdf.gzip
+def _build_catalog(fs: HTTPFileSystem,
+                   format: str,
+                   resolution: str) -> dict:
+    """Builds a catalog for IMA data
 
+    Parameters
+    ----------
+    fs : fsspec HTTPSFileSystem instance
+    format : file format of data
+    resolution : spatial resolution
+
+    Returns
+    -------
+    a dictionary of urls to https-hosted data files
+    index by dates.
+
+    Raises HTTPError from urllib if error condition returned. 
+    """
+    url = make_noaa_imspath(resolution, format)
+
+    try:
+        check_url(url)
+    except HTTPError as err:
+        raise err
+
+    files = get_filelist(fs, url)
+
+    # TODO: Allow nested dict to be build and returned
+    # This may work better with walk
     cat = {}
     for item in files:
         entry = parse_urlpath(item)
-        timestamp, href = list(entry['netcdf']['4km'].items())[0]
+        timestamp, href = list(entry[format][resolution].items())[0]
         cat[timestamp.strftime("%Y-%m-%d")] = href
     return cat
+
+
+def get_filelist(fs: HTTPFileSystem,
+                 url: str) -> List[str]:
+    """Returns a list of files that match the format"""
+    if "netcdf" in url:
+        suffix = ".nc.gz"
+    else:
+        suffix = ".asc.gz"
+    return [f for f in fs.find(url) if f.endswith(suffix)]
+
 
 def _write_catalog(cat, catalog_id):
     with open(catalog_id, "w") as f:
@@ -85,9 +129,37 @@ def parse_filename(fn):
 
 def parse_urlpath(f):
     p = urlparse(f)
-    format, resolution, year, filename = p.path.split("/")[3:]
+    if "netcdf" in p.path:
+        format, resolution, year, filename = p.path.split("/")[-4:]
+    else:
+        format = "ascii"
+        resolution, year, filename = p.path.split("/")[-3:]
     date = parse_filename(filename)
     return {format: {resolution: {date: f}}}
+
+
+def make_noaa_imspath(resolution: str,
+                      format: str) -> str:
+    """Makes a URL path for the NOAA@NSIDC IMS Snowcover dataset
+
+    Parameters
+    ----------
+    resolution : resolution of product
+    format : file format for data
+
+    Returns
+    -------
+    string containing valid URL
+    """
+    if format == "netcdf":
+        url = f"NOAA/G02156/{format}/{resolution}"
+    else:
+        url = f"NOAA/G02156/{resolution}"
+    url_components = URLComponents(
+        netloc = "noaadata.apps.nsidc.org",
+        url = url
+        )
+    return urlunparse(url_components)
 
 
 def check_url(url):
@@ -96,3 +168,11 @@ def check_url(url):
         urlopen(url)
     except HTTPError as err:
         raise(err)
+
+
+URLComponents = namedtuple(
+    typename="URLComponets",
+    field_names=['scheme', 'netloc', 'url', 'params', 'query', 'fragment'],
+    defaults=["https", "", "", "", "", ""]
+    )
+

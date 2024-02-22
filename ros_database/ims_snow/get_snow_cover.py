@@ -1,12 +1,13 @@
 """Extract IMS snow cover data"""
 
 from pathlib import Path
+from urllib.error import HTTPError
 
 import fsspec
 import xarray as xr
 import pandas as pd
 import geopandas
-from pqdm.processing import pqdm
+from pqdm.processes import pqdm
 
 from ros_database.ims_snow.load import _build_catalog
 from ros_database.processing.surface import load_station_metadata
@@ -73,10 +74,25 @@ def get_href(resolution="4km", format="netcdf"):
     return [href for href in _build_catalog(fs, format, resolution).values()]
 
 
-def get_snow_cover(resolution="4km", format="netcdf"):
+def get_snow_cover(resolution: str="4km", format: str="netcdf") -> None:
+    """Extracts IMS snow cover for stations
 
+    ADD PARAMS
+    """
 
-    urls = get_href()
+    if resolution == "24km":
+        print("Warning: 24km resolution data only available as ascii, "
+              "setting format to ascii")
+        format = "ascii"
+        
+    try:
+        urls = get_href(resolution, format)
+    except HTTPError as err:
+        print(f"Search for urls failed: {err}")
+        return
+
+    print(urls)
+    return
 
     stations = get_station_coords()
 
@@ -86,4 +102,19 @@ def get_snow_cover(resolution="4km", format="netcdf"):
 #    df.to_csv(f"ims.snow_cover.from_{resolution}.csv")
 
 if __name__ == "__main__":
-    get_snow_cover()
+
+    import argparse
+
+    parser = argparse.ArgumentParser("get_snow_cover",
+                                     description=("Extracts snow cover class for "
+                                                  "AROSS ASOS stations"))
+    parser.add_argument("--resolution", type=str, default="4km",
+                        help="data set spatial resolution",
+                        choices=["1km", "4km", "24km"])
+    parser.add_argument("--format", type=str, default="netcdf",
+                        help="file format of data",
+                        choices=["netcdf", "ascii"])
+
+    args = parser.parse_args()
+
+    get_snow_cover(resolution=args.resolution, format=args.format)
