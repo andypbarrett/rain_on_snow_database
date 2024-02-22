@@ -19,6 +19,7 @@ dependencies:
  - openpyxl
  - geopandas
  - aiohttp
+ - pqdm
  - pytest
  - pip:
      - /home/apbarret/src/nsidc_projections
