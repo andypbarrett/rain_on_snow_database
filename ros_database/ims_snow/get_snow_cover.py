@@ -3,11 +3,14 @@
 from pathlib import Path
 from urllib.error import HTTPError
 
+import gzip
+import numpy as np
+
 import fsspec
 import xarray as xr
 import pandas as pd
 import geopandas
-from pqdm.processes import pqdm
+from pqdm.threads import pqdm
 
 from ros_database.ims_snow.load import _build_catalog
 from ros_database.processing.surface import load_station_metadata
@@ -92,17 +95,24 @@ def get_snow_cover(resolution: str="4km",
         urls = get_href(resolution, format)
     except HTTPError as err:
         print(f"Search for urls failed: {err}")
-        return
-
-    print(urls)
-    return
 
     stations = get_station_coords()
 
-    list_of_df = [extract_from_file(href, stations) for href in urls]
+    # Use pqdm to parallelize collection of dataframes
+    if test:
+        urls = urls[:ntest]
+    args = [(url, stations) for url in urls]
+    list_of_df = pqdm(args, extract_from_file, n_jobs=8, argument_type="args")
+
+#    list_of_df = [extract_from_file(href, stations) for href in urls]
+
+    # Concatenate dataframes 
     df = pd.concat(list_of_df).droplevel(level=0, axis=1)
     print(df.head())
-#    df.to_csv(f"ims.snow_cover.from_{resolution}.csv")
+
+    # Write results
+    df.to_csv(f"ims.snow_cover.from_{resolution}.csv")
+
 
 if __name__ == "__main__":
 
