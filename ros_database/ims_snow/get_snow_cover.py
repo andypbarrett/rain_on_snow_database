@@ -74,7 +74,10 @@ def get_href(resolution="4km", format="netcdf"):
     return [href for href in _build_catalog(fs, format, resolution).values()]
 
 
-def get_snow_cover(resolution: str="4km", format: str="netcdf") -> None:
+def get_snow_cover(resolution: str="4km",
+                   format: str="netcdf",
+                   test: bool=False,
+                   ntest: int=10) -> None:
     """Extracts IMS snow cover for stations
 
     ADD PARAMS
@@ -114,7 +117,12 @@ if __name__ == "__main__":
     parser.add_argument("--format", type=str, default="netcdf",
                         help="file format of data",
                         choices=["netcdf", "ascii"])
+    parser.add_argument("--test", action="store_true",
+                        help="Run on a subset of urls")
+    parser.add_argument("--ntest", type=int, default=10,
+                        help="Number of tests")
 
     args = parser.parse_args()
-
-    get_snow_cover(resolution=args.resolution, format=args.format)
+    
+    get_snow_cover(resolution=args.resolution, format=args.format,
+                   test=args.test, ntest=args.ntest)
