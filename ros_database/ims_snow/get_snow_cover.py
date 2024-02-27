@@ -18,6 +18,39 @@ from ros_database.processing.surface import load_station_metadata
 fs = fsspec.filesystem("https")
 
 
+def read_ims_ascii(f):
+    """Reads an IMS ASCII data file and returns a numpy.ndarray"""
+    with gzip.open(filepath, 'r') as f:
+        content = f.read().decode("ascii")
+    return np.array([list(line) for line in content.split("\n")
+                     if len(line) == nrow], dtype=float)
+
+
+def load_ascii_grid(f):
+    """Loads an IMS ASCII dataset
+
+    Data before 2004 are in ASCII grids
+
+    Parameters
+    ----------
+    f : file-like object to be passed to reader
+
+    Returns
+    -------
+    xarray.Dataset with rio accessors
+    """
+    data = read_ims_ascii(f)
+    
+    # Calculate x and y coordinates
+    # Extract date
+    # Add CRS
+    # Add coords
+    # Add attributes
+    ds = data
+    
+    return ds
+
+
 def extract_from_dataset(ds: xr.Dataset,
                          x: xr.DataArray,
                          y: xr.DataArray) -> pd.DataFrame:
