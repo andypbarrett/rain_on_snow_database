@@ -21,6 +21,7 @@ dependencies:
  - aiohttp
  - pqdm
  - pytest
+ - cfchecker
  - pip:
      - /home/apbarret/src/nsidc_projections
 
