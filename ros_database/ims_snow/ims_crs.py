@@ -1,6 +1,9 @@
 """Defines CRS and grid for IMS"""
+from typing import Tuple
+
 from pyproj import CRS, Transformer
 from affine import Affine
+import numpy as np
 
 # Grid and projection parameters are taken from Ims24km.gpd
 # Projection Parameters
@@ -55,11 +58,11 @@ grid_map_origin_row = 511.5
 grid_origin_x = (grid_map_origin_column + 0.5) * grid_cell_width * -1.
 grid_origin_y = (grid_map_origin_row + 0.5) * grid_cell_height * -1.
 
-grid_transform = Affine(grid_cell_width, 0.0, grid_origin_x,
-                        0.0, grid_cell_height, grid_origin_y)
+#grid_transform = Affine(grid_cell_width, 0.0, grid_origin_x,
+#                   0.0, grid_cell_height, grid_origin_y)
 
 
-class Grid(Affine):
+class Grid():
     """Class for grid operations"""
     def __init__(self,
                  nrow,
@@ -68,6 +71,9 @@ class Grid(Affine):
                  grid_cell_height,
                  grid_origin_x,
                  grid_origin_y,
+                 grid_rotation_x = 0.0,
+                 grid_rotation_y = 0.0,
+                 crs = None
                  ):
         self.nrow = nrow
         self.ncol = ncol
@@ -75,11 +81,21 @@ class Grid(Affine):
         self.grid_cell_height = grid_cell_height
         self.grid_origin_x = grid_origin_x
         self.grid_origin_y = grid_origin_y
+        self.grid_rotation_x = grid_rotation_x
+        self.grid_rotation_y = grid_rotation_y
+        self.crs = crs
 
         # Add method to get grid_origin from map origin column
         # and row
         
         # Add set Affine
+        self.transform = Affine(self.grid_cell_width,
+                                self.grid_rotation_y,
+                                self.grid_origin_x,
+                                self.grid_rotation_y,
+                                self.grid_cell_height,
+                                self.grid_origin_y)
+
 
     def __repr__(self):
         return (f"Grid("
@@ -98,19 +114,52 @@ class Grid(Affine):
                 f"    grid_cell_height: {self.grid_cell_height}\n"
                 f"    grid_origin_x: {self.grid_origin_x}\n"
                 f"    grid_origin_y: {self.grid_origin_y}\n")
+
+
+    def xy_coords(self,
+                  xshift: float=0.0,
+                  yshift: float=0.0):
+        """Returns xy coordinatee for the IMS 24 km grid
+
+        Parameters
+        ----------
+        xshift : Number of column coordinates to shift x-coordinates to get grid cell corners.
+                 -0.5 to get left cell boundary, 0.5 to get right cell boundary.
+        yshift : Number of row coordinates to shift y-coordinates to get grid cell corners.
+                -0.5 to get lower cell boundary, 0.5 to get upper cell boundary.  Uses sign
+                of grid_cell_height to modify yshift to ensure yshift < 0. always gets lower
+                cell boundary.
+
+        Returns
+        -------
+        Tuple of numpy.array
+
     
-                 
-def get_xy_coords(xshift=0.0, yshift=0.0):
-    """Returns xy coordinatee for the IMS 24 km grid"""
-    r0 = 0.5 + yshift
-    r1 = nrow + yshift
-    c0 = 0.5 + xshift
-    c1 = ncol + xshift
-    row = np.arange(0.5, nrow)
-    col = np.arange(0.5, ncol)
-    x, _ = transform * (col, 0.5)
-    _, y = transform * (0.5, row)
-    return x, y
+        Examples
+        --------
+        """
+        r0 = 0.5 + yshift
+        r1 = self.nrow + yshift
+        c0 = 0.5 + xshift
+        c1 = self.ncol + xshift
+
+        row = np.arange(r0, r1)
+        col = np.arange(c0, c1)
+        x, _ = self.transform * (col, 0.5)
+        _, y = self.transform * (0.5, row)
+        return x, y
+
+
+    def bounds(self):
+        """Returns grid bounds"""
+        x0, y0 = self.transform * (0., 0.)
+        x1, y1 = self.transform * (self.ncol, self.nrow)
+        return (min([x0,x1]), min([y0,y1]), max([x0,x1]), max([y0,y1]))
+
+
+IMS24Grid = Grid(nrow, ncol, grid_cell_width, grid_cell_height,
+                 grid_origin_x, grid_origin_y,
+                 crs=IMS24NorthPolarStereo)
 
 
 def get_xarray_spatial_coords():
