@@ -18,12 +18,22 @@ from ros_database.processing.surface import load_station_metadata
 fs = fsspec.filesystem("https")
 
 
-def read_ims_ascii(f):
+def read_ims_ascii(filepath, with_header=False):
     """Reads an IMS ASCII data file and returns a numpy.ndarray"""
+    nrow = 1024
+    ncol = 1024
+
+    # Add an opener lookup function
+    
     with gzip.open(filepath, 'r') as f:
         content = f.read().decode("ascii")
-    return np.array([list(line) for line in content.split("\n")
+    header = [line for line in content.split("\n") if (len(line) > 0) & (len(line) < nrow)]
+    data = np.array([list(line) for line in content.split("\n")
                      if len(line) == nrow], dtype=float)
+    if with_header:
+        return header, data
+    else:
+        return data
 
 
 def load_ascii_grid(f):
@@ -128,6 +138,8 @@ def get_snow_cover(resolution: str="4km",
         urls = get_href(resolution, format)
     except HTTPError as err:
         print(f"Search for urls failed: {err}")
+    print(href)
+    return
 
     stations = get_station_coords()
 
