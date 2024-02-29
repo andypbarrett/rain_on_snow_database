@@ -22,6 +22,7 @@ dependencies:
  - pqdm
  - pytest
  - cfchecker
+ - nbdime
  - pip:
      - /home/apbarret/src/nsidc_projections
 
