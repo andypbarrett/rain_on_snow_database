@@ -2,6 +2,9 @@
 from typing import Tuple
 
 from pyproj import CRS, Transformer
+from pyproj.crs import ProjectedCRS
+from pyproj.crs.coordinate_operation import StereographicConversion
+
 from affine import Affine
 import numpy as np
 
@@ -41,6 +44,16 @@ proj4_string = (f"+proj={projection_method} +lat_0={central_latitude} "
                 f"+ellps=sphere +R={radius} "
                 f"+x_0={false_easting} +y_0={false_northing}")
 IMS24NorthPolarStereo = CRS.from_proj4(proj4_string)
+
+# IMS 4km Grid CRS - same projection parameters except on WGS84 and no false origin
+# projection_method = "stere"
+# central_latitude = 90.
+# central_longitude = -80.
+# true_scale_latitude = 60.
+proj4_string = (f"+proj={projection_method} +lat_0={central_latitude} "
+                f"+lat_ts={true_scale_latitude} +lon_0={central_longitude}")
+IMS4kmNorthPolarStero = CRS.from_proj4(proj4_string)
+
 
 # CRS for WGS84
 WGS84 = CRS.from_epsg(4326)
@@ -96,6 +109,9 @@ class Grid():
                                 self.grid_cell_height,
                                 self.grid_origin_y)
 
+        self.transformer = Transformer.from_crs(4326, self.crs,
+                                                always_xy=True)
+
 
     def __repr__(self):
         return (f"Grid("
@@ -150,6 +166,42 @@ class Grid():
         return x, y
 
 
+    def colrow_to_xy(self, col, row):
+        """Returns x and y projected coordinates 
+        for a column and row."""
+        return self.transform * (col, row)
+
+
+    def xy_to_colrow(self, x, y):
+        """Returns image coordinates 
+        for a column and row."""
+        return ~self.transform * (x, y)
+
+
+    def lonlat_to_xy(self, lon, lat):
+        """Returns x, y projected coordinated for
+        a longitude, latitude pair"""
+        return self.transformer.transform(lon, lat)
+
+
+    def xy_to_latlon(self, x, y):
+        """Returns x, y projected coordinates for
+        a an x,y pair"""
+        return self.transformer.transform(x, y, direction="INVERSE")
+
+
+    def colrow_to_lonlat(self, col, row):
+        """Returns geographic coordinates (WGS84)
+        for image coordinates"""
+        return self.xy_to_latlon(*self.colrow_to_xy(col, row))
+
+
+    def lonlat_to_colrow(self, lon, lat):
+        """Returns image coordnates for a
+        geographic coordinate pair"""
+        return self.xy_to_colrow(*self.lonlat_to_xy(lon, lat))
+
+
     def bounds(self):
         """Returns grid bounds"""
         x0, y0 = self.transform * (0., 0.)
@@ -157,10 +209,31 @@ class Grid():
         return (min([x0,x1]), min([y0,y1]), max([x0,x1]), max([y0,y1]))
 
 
-IMS24Grid = Grid(nrow, ncol, grid_cell_width, grid_cell_height,
-                 grid_origin_x, grid_origin_y,
+IMS24Grid = Grid(nrow,
+                 ncol,
+                 grid_cell_width,
+                 grid_cell_height,
+                 grid_origin_x,
+                 grid_origin_y,
                  crs=IMS24NorthPolarStereo)
 
+IMS4kmGrid = Grid(nrow=6144,
+                  ncol=6144,
+                  grid_cell_width=4000,
+                  grid_cell_height=4000,
+                  grid_origin_x=-12288000.0,
+                  grid_origin_y=-12288000.0,
+                  crs=IMS4kmNorthPolarStero)
+
+IMS1kmGrid = Grid(nrow=24576
+                  ncol=24576
+                  grid_cell_width=4000,
+                  grid_cell_height=4000,
+                  grid_origin_x=-12288000.0,
+                  grid_origin_y=-12288000.0,
+                  crs=IMS4kmNorthPolarStero)
+
+# Add IMS4kmGrid and IMS1kmGrid
 
 def get_xarray_spatial_coords():
     """Returns xarray.DataArrays for x and y coordinate"""
