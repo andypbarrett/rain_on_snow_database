@@ -23,6 +23,8 @@ dependencies:
  - pytest
  - cfchecker
  - nbdime
+ - geocube
+ - geodatasets
  - pip:
      - /home/apbarret/src/nsidc_projections
 
