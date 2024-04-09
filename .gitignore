@@ -1,1 +1,8 @@
 duplicate_lists_assessment.txt
+*.csv
+*.gpd
+*.nc
+*.bin.gz
+*.double
+*.nc.gz
+*.asc.gz

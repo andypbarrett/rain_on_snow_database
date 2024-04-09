@@ -144,7 +144,8 @@ def read_iowa_mesonet_file(filepath, usecols=None, index_col=0):
 
     df = pd.read_csv(filepath, header=0, index_col=index_col,
                      parse_dates=True, na_values=["M",""],
-                     usecols=usecols, converters=converters)
+                     usecols=usecols, converters=converters,
+                     low_memory=False)
     df.index.rename('datetime', inplace=True)
     return df
 
@@ -328,5 +329,6 @@ def load_station_combined_data(station_path):
     """
     return pd.read_csv(station_path,
                        index_col=0, header=0,
-                       parse_dates=True)
+                       parse_dates=True,
+                       low_memory=False)
     

@@ -14,9 +14,19 @@ dependencies:
  - cartopy
  - dask
  - xarray
+ - h5netcdf
+ - rioxarray
  - openpyxl
  - geopandas
+ - aiohttp
+ - pqdm
  - pytest
+ - cfchecker
+ - nbdime
+ - geocube
+ - geodatasets
+ - pip:
+     - /home/apbarret/src/nsidc_projections
 
  ##################################################
  # Possible dependencies to import                #
