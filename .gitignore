@@ -4,3 +4,5 @@ duplicate_lists_assessment.txt
 *.nc
 *.bin.gz
 *.double
+*.nc.gz
+*.asc.gz
