@@ -7,12 +7,14 @@ import gzip
 import numpy as np
 
 import fsspec
+import rioxarray
 import xarray as xr
 import pandas as pd
 import geopandas
 from pqdm.threads import pqdm
 
 from ros_database.ims_snow.load import _build_catalog
+from ros_database.ims_snow.ims_crs import IMS24Grid
 from ros_database.processing.surface import load_station_metadata
 
 fs = fsspec.filesystem("https")
@@ -36,6 +38,16 @@ def read_ims_ascii(filepath, with_header=False):
         return data
 
 
+def timestamp_from_filepath(filepath: Path) -> datetime:
+    """Parses filepath to get timestamp"""
+    m = re.search(r"ims(\d{7}_\d{2})UTC", filepath.name)
+    if m:
+        time = datetime.strptime(m.groups()[0], "%Y%j_%H")  #.replace(tzinfo=timezone.utc)
+    else:
+        raise ValueError("Unable to find timestamp-like string in {filepath.name}")
+    return time
+
+
 def load_ascii_grid(f):
     """Loads an IMS ASCII dataset
 
@@ -50,14 +62,58 @@ def load_ascii_grid(f):
     xarray.Dataset with rio accessors
     """
     data = read_ims_ascii(f)
-    
+
     # Calculate x and y coordinates
-    # Extract date
-    # Add CRS
+    x, y = IMS24Grid.xy_coords()
+    # Create x, y coordinates as DataArray
+    x = xr.DataArray(x, coords={'x': x}, attrs=IMS24Grid.crs.coordinate_system.to_cf()[0])
+    y = xr.DataArray(y, coords={'y': y}, attrs=IMS24Grid.crs.coordinate_system.to_cf()[1])
+
     # Add coords
-    # Add attributes
-    ds = data
+    ds = ds.assign_coords(x=x, y=y)
     
+    # Extract timestamp from filepath and add as time coordinate
+    time = [timestamp_from_filepath(filepath)]
+    ds = ds.expand_dims(dim={"time": 1}, axis=0)
+    ds["time"] = [timestamp_from_filepath(filepath)]
+    ds.time.attrs = {
+        "long_name": "time",
+        }
+    
+    # Add CRS
+    grid_mapping_name = "ims_polar_stereographic"
+    ds.rio.write_crs(IMS24Grid.crs, grid_mapping_name=grid_mapping_name, inplace=True)
+
+    # Add attributes
+    attrs = {
+        "long_name": "snow and ice cover",
+        "standard_name": "area_type",
+        "flag_values": [1, 2, 3, 4],
+        "flag_meanings": "ice_free_sea snow_free_land lake_ice_or_sea_ice snow",
+        "comments": "ice_free_sea includes inland and marine water surfaces",
+        }
+
+    global_attrs = {
+        "Conventions": "CF-1.11",
+        "title": "Northern hemisphere snow and sea ice cover",
+        "institution": "US National Ice Center",
+        "source": "Interactive Multisensor Snow and Ice Mapping System",
+        "history": ("Original files from https://nsidc.org/data/g02156/versions/1: "
+                    "Repackaged to NetCDF"),
+        "references": "https://nsidc.org/sites/default/files/g02156-v001-userguide_1_1.pdf",
+        "comment": "",
+        "source_file": f"{filepath}",
+        }
+
+    ds.surface_cover.attrs = attrs
+    ds = ds.assign_attrs(global_attrs)
+
+    ds.surface_cover.encoding.update({
+        "_FillValue": 0,
+        "dtype": 'byte',
+        "grid_mapping": grid_mapping_name,
+        })
+
     return ds
 
 
