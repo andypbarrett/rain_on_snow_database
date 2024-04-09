@@ -28,11 +28,17 @@ def summarize_events(df):
     grouper = df.groupby(df.event)
     summary = pd.DataFrame(
                       {
-                          "start": prec_group.apply(event_start),
-                          "end": prec_group.apply(event_end),
-                          "duration": prec_group.apply(duration),
+                          "start": grouper.apply(event_start),
+                          "end": grouper.apply(event_end),
+                          "duration": grouper.apply(duration),
                       }
     )
     summary.index = summary.start
     return summary
-    
+
+
+def find_events(df):
+    """Finds precipitation events"""
+    df_precip = identify_events(df)
+    result = summarize_events(df_precip)
+    return result
