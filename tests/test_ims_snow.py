@@ -2,6 +2,8 @@ import pytest
 import datetime as dt
 
 from ros_database.ims_snow.load import parse_urlpath
+import  ros_database.ims_snow.get_snow_cover
+
 
 @pytest.mark.parametrize("path, expected",
                          [
@@ -39,3 +41,13 @@ def test_parse_urlpath(path, expected):
     print(f"Expected: {expected}")
     print(f"Result: {entry}")
     assert entry == expected
+
+
+@pytest.mark.parametrize("with_header, expected",
+                         [(False, np.array),
+                          (True, tuple)])
+def test_read_ims_ascii(with_header, expected):
+    filepath = Path.home() / "src" / "rain_on_snow_database" / "data" / "test_data" / "ims1997036_00UTC_24km_v1.1.asc.gz"
+    result = read_ims_ascii(filepath, with_header=with_header)
+    assert isinstance(result, expected)
+    
