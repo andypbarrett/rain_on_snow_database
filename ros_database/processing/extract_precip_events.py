@@ -16,11 +16,30 @@ def identify_events(df):
 def event_start(x):
     return x.index[0]
 
+
 def event_end(x):
     return x.index[-1]
 
+
 def duration(x):
     return len(x)
+
+
+def count_ptype(x, ptype):
+    """Return counts of precipitation type"""
+    return x[ptype].sum()
+
+
+def t2m_mean(x):
+    return x['t2m'].mean()
+
+
+def t2m_min(x):
+    return x['t2m'].min()
+
+
+def t2m_max(x):
+    return x['t2m'].max()
 
 
 def summarize_events(df):
@@ -31,6 +50,13 @@ def summarize_events(df):
                           "start": grouper.apply(event_start),
                           "end": grouper.apply(event_end),
                           "duration": grouper.apply(duration),
+                          "RA": grouper.apply(count_ptype, "RA"),
+                          "UP": grouper.apply(count_ptype, "UP"),
+                          "FZRA": grouper.apply(count_ptype, "FZRA"),
+                          "SOLID": grouper.apply(count_ptype, "SOLID"),
+                          "t2m_mean": grouper.apply(t2m_mean),
+                          "t2m_min": grouper.apply(t2m_min),
+                          "t2m_max": grouper.apply(t2m_max),
                       }
     )
     summary.index = summary.start
