@@ -27,7 +27,7 @@ def duration(x):
 
 def count_ptype(x, ptype):
     """Return counts of precipitation type"""
-    return x[ptype].sum()
+    return int(x[ptype].sum())
 
 
 def t2m_mean(x):
