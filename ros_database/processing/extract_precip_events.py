@@ -1,5 +1,6 @@
 """Extract precipitation events"""
 import pandas as pd
+import numpy as np
 
 PTYPES = ['UP','RA','FZRA','SOLID']
 
@@ -31,7 +32,7 @@ def count_ptype(x, ptype):
 
 
 def t2m_mean(x):
-    return x['t2m'].mean()
+    return np.round(x['t2m'].mean(), 1)
 
 
 def t2m_min(x):
