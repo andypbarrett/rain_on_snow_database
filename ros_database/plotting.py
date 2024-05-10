@@ -1,5 +1,5 @@
 """Plotting routines for database"""
-from typing import Union, List, Any
+from typing import Union, List, Tuple, Any
 import datetime as dt
 
 import numpy as np
@@ -281,10 +281,12 @@ def plot_metdata_histograms(df):
     fig.suptitle(df["station"].iloc[0]);
 
 
-def plot_event_counts(df, event_type="ROS", title="",
-                      max_symbol_size=700,
-                      symbol_color = '0.3',
-                     ):
+def plot_event_counts(df: pd.DataFrame,
+                      event_type: str="ROS",
+                      title: str="",
+                      max_symbol_size: float=700,
+                      symbol_color: str='0.3',
+                     ) -> Tuple[plt.Figure, plt.Axes]:
 
     params = {
         "ROS": {
