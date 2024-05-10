@@ -43,6 +43,10 @@ def t2m_max(x):
     return x['t2m'].max()
 
 
+def is_sog(x):
+    return x['sog'].any()
+
+
 def summarize_events(df):
     """Returns summary statitistics for each event"""
     grouper = df.groupby(df.event)
@@ -58,6 +62,7 @@ def summarize_events(df):
                           "t2m_mean": grouper.apply(t2m_mean),
                           "t2m_min": grouper.apply(t2m_min),
                           "t2m_max": grouper.apply(t2m_max),
+                          "sog": grouper.apply(is_sog),
                       }
     )
     summary.index = summary.start
