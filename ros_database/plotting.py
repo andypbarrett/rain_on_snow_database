@@ -1,5 +1,5 @@
 """Plotting routines for database"""
-from typing import Union, List
+from typing import Union, List, Any
 import datetime as dt
 
 import numpy as np
@@ -34,8 +34,23 @@ def add_valid_obs_bar(da, ax, axis_fraction=0.05, color='k', width=1):
     return ax
 
 
+def get_object_height(obj):
+    """Returns height of object in data units"""
+    ax = plt.gca()
+    inv = ax.transData.inverted()
+    try:
+        bb = obj.get_window_extent()
+    except Exception as err:
+        raise err
+    dx0, dy0 = inv.transform((bb.x0, bb.y0))
+    dx1, dy1 = inv.transform((bb.x1, bb.y1))
+    obj_height = dy1 - dy0
+    return obj_height
+
+
 def extend_yaxis(ax: plt.Axes,
                  by: float=0.05,
+                 for_object: Any=None,
                  extend: str="upper") -> None:
     """Increases yaxis limits to accomodate title or valid obs barcolor
 
@@ -51,6 +66,10 @@ def extend_yaxis(ax: plt.Axes,
     """
     y0, y1 = ax.get_ylim()
     yrange = y1 - y0
+
+    if for_object:
+        by = get_object_height(for_object) / yrange
+
     if extend == "upper":
         y1 += yrange * by
     elif extend == "lower":
@@ -90,15 +109,12 @@ def plot_ptype(df: pd.DataFrame,
         add_valid_obs_bar(valid_obs, ax, color=obs_bar_color, width=obs_bar_width)
 
     # Add label to plot
-    print(ax.get_ylim())
     if title:
-        extend_yaxis(ax, 0.04, "upper")
         t = ax.text(0.013, 0.98, title,
                     va="top",
                     transform=ax.transAxes,
-                    bbox=dict(facecolor='white', alpha=0.7, edgecolor='none'))
-        print(t.get_window_extent())
-    print(ax.get_ylim())
+                    bbox=dict(facecolor='white', alpha=0., edgecolor='none'))
+        extend_yaxis(ax, for_object=t, extend="upper")
 
     return ax
 
@@ -146,10 +162,11 @@ def plot_line(da: pd.Series,
 
     # Add label to plot
     if title:
-        ax.text(0.013, 0.98, title,
-                va="top",
-                transform=ax.transAxes,
-                bbox=dict(facecolor='white', alpha=0.7, edgecolor='none'))
+        t = ax.text(0.013, 0.98, title,
+                    va="top",
+                    transform=ax.transAxes,
+                    bbox=dict(facecolor='white', alpha=0.7, edgecolor='none'))
+        extend_yaxis(ax, for_object=t, extend="upper")
 
 
 def plot_bar(da: pd.Series,
@@ -187,6 +204,7 @@ def plot_bar(da: pd.Series,
                     va="top",
                     transform=ax.transAxes,
                     bbox=dict(facecolor='white', alpha=0.7, edgecolor='none'))
+        extend_yaxis(ax, for_object=t, extend="upper")
 
     return ax
 
