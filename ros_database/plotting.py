@@ -280,3 +280,62 @@ def plot_metdata_histograms(df):
             
     fig.suptitle(df["station"].iloc[0]);
 
+
+def plot_event_counts(df, event_type="ROS", title="",
+                      max_symbol_size=700,
+                      symbol_color = '0.3',
+                     ):
+
+    params = {
+        "ROS": {
+            "title": "Winter Rain",
+            "legend_counts": [80000, 10000, 1000],
+            },
+        "SOLID": {
+            "title": "Winter Solid Precipitation",
+            "legend_counts": [80000, 10000, 1000],
+            },
+        "Total": {
+            "title": "All Precipitation",
+            "legend_counts": [80000, 10000, 1000],
+        },
+    }
+
+    title = params[event_type]["title"]
+    legend_counts = params[event_type]["legend_counts"]
+    
+    ax = fig.add_subplot(projection=ccrs.NorthPolarStereo())
+    ax.set_extent([-180., 180., 50., 90.], ccrs.PlateCarree())
+    ax.add_feature(cfeature.OCEAN)
+    ax.add_feature(cfeature.LAND)
+
+    ax.set_title(title, fontsize=20)
+
+    symbol_size = max_symbol_size * df[event_type] / df[event_type].max()
+    xy = ax.scatter(df.longitude, df.latitude, s=symbol_size, c=symbol_color, 
+                    transform=ccrs.PlateCarree(), alpha=0.7)
+
+    # Make the legend  This needs to be figured out
+    # This is a little Kludgey
+    legend_sizes = max_symbol_size * np.array(legend_counts) / df[event_type].max()
+
+    # Get positions for Legend circles
+    pos = ax.transAxes.transform([(0.8, 0.9), (0.8, 0.86), (0.8, 0.84)])
+    inv = ax.transData.inverted()
+    xpos, ypos = list(zip(*inv.transform(pos)))
+
+    # Make Bounding Box
+    rect = mpatches.Rectangle((0.76,0.82), height=0.15, width=0.15, transform=ax.transAxes,
+                              edgecolor=None, facecolor="white", alpha=0.7)
+    ax.add_patch(rect)
+
+    # Add symbols
+    ax.scatter(xpos, ypos, s=legend_sizes, c=symbol_color)
+
+    # Add text
+    ax.text(0.835, 0.96, "Events", transform=ax.transAxes, ha="center", va="top", fontsize=15)
+    ax.text(0.90, 0.9, f"{legend_counts[0]}", transform=ax.transAxes, ha='right')
+    ax.text(0.90, 0.86, f"{legend_counts[1]}", transform=ax.transAxes, ha='right')
+    ax.text(0.90, 0.84, f"{legend_counts[2]}", transform=ax.transAxes, ha='right')
+
+    return fig, ax
