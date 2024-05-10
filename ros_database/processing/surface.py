@@ -332,3 +332,16 @@ def load_station_combined_data(station_path):
                        parse_dates=True,
                        low_memory=False)
     
+
+def load_hourly_observations(fp: Path) -> pd.DataFrame:
+    """Loads hourly observation files
+
+    Arguments
+    ---------
+    fp : path to hourly station file
+
+    Returns
+    -------
+    Pandas dataframe
+    """
+    return pd.read_csv(fp, parse_dates=True, index_col=0, low_memory=False)
