@@ -6,7 +6,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
 
-
+import cartopy.crs as ccrs
+import cartopy.feature as cfeature
 
 PTYPE_COLORS = [
     'tab:orange',  # UP
@@ -150,7 +151,10 @@ def plot_line(da: pd.Series,
     ax.plot(da.index, da, color=linecolor, lw=linewidth)
 
     # Add valid obs bar
-    add_valid_obs_bar(da, ax, color=obs_bar_color, width=obs_bar_width)
+    if add_obs_bar:
+        if not obs_bar_width:
+            obs_bar_width = width
+        add_valid_obs_bar(da, ax, color=obs_bar_color, width=obs_bar_width)
 
     # Add ylabel
     if ylabel:
@@ -209,52 +213,101 @@ def plot_bar(da: pd.Series,
     return ax
 
 
+def plot_sog(da: pd.Series,
+             ax: plt.Axes=None,
+             linecolor: str=None,
+             linewidth: float=1,
+             add_obs_bar: bool=False,
+             obs_bar_color: str='0.4',
+             obs_bar_width: Union[float, None]=None,
+             ylabel: Union[str, None]=None,
+             title: Union[str, None]=None,
+             ) -> plt.Axes:
+    """Plots Snow on Ground"""
+
+    if not ax:
+        ax = plt.gca()
+
+#    ax.fill_between(da.index, da*1., color=linecolor, lw=linewidth)
+    ax.plot(da.index, da*1., color=linecolor, lw=linewidth)
+
+    if add_obs_bar:
+        if not obs_bar_width:
+            obs_bar_width = width
+        add_valid_obs_bar(da, ax, color=obs_bar_color, width=obs_bar_width)
+
+    if ylabel:
+        ax.set_ylabel(ylabel)
+
+    # Add label to plot
+    if title:
+        t = ax.text(0.013, 0.98, title,
+                    va="top",
+                    transform=ax.transAxes,
+                    bbox=dict(facecolor='white', alpha=0.7, edgecolor='none'))
+        extend_yaxis(ax, for_object=t, extend="upper")
+
+    return ax
+
+
 def plot_period_of_record(df: pd.DataFrame,
-                          add_obs_bar: bool=True,
+                          add_obs_bar: bool=False,
                           title: str="") -> plt.Figure:
     """Generates a plot of station observations"""
 
     width = dt.timedelta(days=1)  # For bar plots
 
-    fig, ax = plt.subplots(7, 1, figsize=(12,10), sharex=True)
+    fig, ax = plt.subplots(8, 1, figsize=(12,10), sharex=True)
     fig.tight_layout(h_pad=0.01)
 
     plot_line(df.t2m,
               ax=ax[0],
               add_axhline=True,
+              add_obs_bar=add_obs_bar,
               ylabel="deg C",
               title="2m Air Temperature")
     
     plot_line(df.d2m,
               ax=ax[1],
               add_axhline=True,
+              add_obs_bar=add_obs_bar,
               ylabel="deg C",
               title="2m Dewpoint Temperature")
     
     plot_line(df.psurf,
               ax=ax[2],
+              add_obs_bar=add_obs_bar,
               ylabel="hPa",
               title="Surface Pressure")
 
     plot_bar(df.p01i,
              ax=ax[3],
+             add_obs_bar=add_obs_bar,
              ylabel="mm",
              title="Precipitation")
 
     plot_line(df.wspd,
               ax=ax[4],
+              add_obs_bar=add_obs_bar,
               ylabel="m/s",
               title="Wind Speed")
     
     plot_line(df.drct,
               ax=ax[5],
+              add_obs_bar=add_obs_bar,
               ylabel="Degrees",
               title="Wind Direction")
     
     plot_ptype(df,
                ax=ax[6],
+               add_obs_bar=add_obs_bar,
                width=width,
                title="Precipitation Type")
+
+    plot_sog(df.sog,
+             ax=ax[7],
+             add_obs_bar=add_obs_bar,
+             title="Snow on Ground")
 
     fig.suptitle(title);
     plt.subplots_adjust(top=0.95)
@@ -281,12 +334,58 @@ def plot_metdata_histograms(df):
     fig.suptitle(df["station"].iloc[0]);
 
 
+def add_event_legend():
+    # Make the legend  This needs to be figured out
+    # This is a little Kludgey
+    legend_sizes = max_symbol_size * np.array(legend_counts) / df[event_type].max()
+
+    # Get positions for Legend circles
+    pos = ax.transAxes.transform([(0.8, 0.9), (0.8, 0.86), (0.8, 0.84)])
+    inv = ax.transData.inverted()
+    xpos, ypos = list(zip(*inv.transform(pos)))
+
+    # Make Bounding Box
+    rect = mpatches.Rectangle((0.76,0.82), height=0.15, width=0.15, transform=ax.transAxes,
+                              edgecolor=None, facecolor="white", alpha=0.7)
+    ax.add_patch(rect)
+
+    # Add symbols
+    ax.scatter(xpos, ypos, s=legend_sizes, c=symbol_color)
+
+    # Add text
+    ax.text(0.835, 0.96, "Events", transform=ax.transAxes, ha="center", va="top", fontsize=15)
+    ax.text(0.90, 0.9, f"{legend_counts[0]}", transform=ax.transAxes, ha='right')
+    ax.text(0.90, 0.86, f"{legend_counts[1]}", transform=ax.transAxes, ha='right')
+    ax.text(0.90, 0.84, f"{legend_counts[2]}", transform=ax.transAxes, ha='right')
+    
+
 def plot_event_counts(df: pd.DataFrame,
+                      fig: plt.Figure=None,
                       event_type: str="ROS",
                       title: str="",
                       max_symbol_size: float=700,
                       symbol_color: str='0.3',
                      ) -> Tuple[plt.Figure, plt.Axes]:
+    """Makes a North Polar Stereographic map of counts using 
+    proportial circles.
+
+    Parameters
+    ----------
+    df : pandas.Dataframe containing data to plot
+    fig : matplotlib.Figure instance
+    title : plot title
+    max_symbol_size : maximum size of symbol in points**2 (typographic points 
+                      are 1/72 inches).
+    symbol_color : color of symbol.  Default is "0.3" - light grey
+
+    Returns
+    -------
+    Figure and Axes objects
+    """
+
+    if fig is None:
+        fig = plt.gcf()
+    print(fig)
 
     params = {
         "ROS": {
@@ -317,27 +416,5 @@ def plot_event_counts(df: pd.DataFrame,
     xy = ax.scatter(df.longitude, df.latitude, s=symbol_size, c=symbol_color, 
                     transform=ccrs.PlateCarree(), alpha=0.7)
 
-    # Make the legend  This needs to be figured out
-    # This is a little Kludgey
-    legend_sizes = max_symbol_size * np.array(legend_counts) / df[event_type].max()
-
-    # Get positions for Legend circles
-    pos = ax.transAxes.transform([(0.8, 0.9), (0.8, 0.86), (0.8, 0.84)])
-    inv = ax.transData.inverted()
-    xpos, ypos = list(zip(*inv.transform(pos)))
-
-    # Make Bounding Box
-    rect = mpatches.Rectangle((0.76,0.82), height=0.15, width=0.15, transform=ax.transAxes,
-                              edgecolor=None, facecolor="white", alpha=0.7)
-    ax.add_patch(rect)
-
-    # Add symbols
-    ax.scatter(xpos, ypos, s=legend_sizes, c=symbol_color)
-
-    # Add text
-    ax.text(0.835, 0.96, "Events", transform=ax.transAxes, ha="center", va="top", fontsize=15)
-    ax.text(0.90, 0.9, f"{legend_counts[0]}", transform=ax.transAxes, ha='right')
-    ax.text(0.90, 0.86, f"{legend_counts[1]}", transform=ax.transAxes, ha='right')
-    ax.text(0.90, 0.84, f"{legend_counts[2]}", transform=ax.transAxes, ha='right')
 
     return fig, ax
