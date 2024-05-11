@@ -4,8 +4,7 @@ from pathlib import Path
 
 from ros_database.processing.surface import load_station_combined_data
 from ros_database.processing.extract_precip_events import find_events
-from ros_database.filepath import (SURFOBS_HOURLY_PATH, SURFOBS_COMBINED_PATH,
-                                   SURFOBS_EVENTS_PATH)
+from ros_database.filepath import SURFOBS_COMBINED_PATH, SURFOBS_EVENTS_PATH
 
 
 def make_outpath(fp: Path) -> Path:
