@@ -8,6 +8,7 @@
 # TODO
 # 1. Create master script to push database to both ftp
 #    and /projects/AROSS
+# 2. Add checksum to ensure copy is correct
 ##########################################################
 
 # Arguments and Options
