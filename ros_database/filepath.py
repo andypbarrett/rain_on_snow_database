@@ -40,7 +40,9 @@ STATIONS_SURFACE_REANALYSIS = ERA5_DATAPATH / 'surface' / 'stations' / 'hourly'
 STATIONS_UPPER_AIR_REANALYSIS = ERA5_DATAPATH / 'pressure_levels' / 'stations' / 'hourly'
 
 # IMS Snow cover files
-IMS_PATH = AROSS_PATH / 'IMS_Daily_NorthernHemisphere_Snow' / 'original' / '4km'
+# IMS_PATH = AROSS_PATH / 'IMS_Daily_NorthernHemisphere_Snow' / 'original' / '4km'
+IMS_PATH = AROSS_PATH / '..' / 'ims_snowcover'
+
 # ASOS metadata path
 ASOS_METADATA_PATH = SURFOBS_PATH / 'metadata' / 'aross.asos_stations.metadata.csv'
 # ASOS Winter Rain Counts
