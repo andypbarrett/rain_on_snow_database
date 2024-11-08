@@ -385,7 +385,6 @@ def plot_event_counts(df: pd.DataFrame,
 
     if fig is None:
         fig = plt.gcf()
-    print(fig)
 
     params = {
         "ROS": {
