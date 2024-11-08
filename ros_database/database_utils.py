@@ -76,7 +76,7 @@ def make_yticklabels(y, interval=5.):
     return yticks, ylabels
 
 def heatmap(X, y=None, ax=None, fig=None, aspect=0.4, cmap='viridis', norm=None, 
-            levels=None, extend="max", **kwargs):
+            levels=None, extend="max", base=5, **kwargs):
     """Plots a heat map with date labels
     
     :X: pd.DataFrame containing counts
@@ -100,8 +100,12 @@ def heatmap(X, y=None, ax=None, fig=None, aspect=0.4, cmap='viridis', norm=None,
     
     yticks = [0, 53,  76,  90,  94, 120, 146, 169, 244]
     ylabels = ['CA', 'FI', 'GL', 'IS', 'NO', 'RU', 'SE', 'US']
-    xticks = np.where(X.index.month == 1)[0][::2]
-    xlabels = X.index.year[xticks]
+
+    # Set the x-tick interval
+    base = int(np.ceil(len(X.index.year.unique()) / 11))
+    intervals = np.array([1, 2, 5, 10, 50])
+    idx = np.abs(intervals - base).argmin()
+    base = intervals[idx]
 
     if not levels:
         vmin = np.nanmin(data)
@@ -113,10 +117,9 @@ def heatmap(X, y=None, ax=None, fig=None, aspect=0.4, cmap='viridis', norm=None,
                    extent=[X.index.min(), X.index.max(), 0, len(y)],
                    interpolation="none", **kwargs)
 
-    ax.xaxis.set_major_locator(mdates.YearLocator(base=5))
+    ax.xaxis.set_major_locator(mdates.YearLocator(base=base))
     ax.xaxis.set_major_formatter(mdates.DateFormatter('%Y'))
-    # ax.set_xticks(xticks)
-    # ax.set_xticklabels(xlabels, fontsize=15)
+
     ax.set_yticks(yticks)
     ax.set_yticklabels([])
     ax.set_yticks([(yticks[i]+yticks[i+1])*0.5 for i in range(len(yticks)-1)], minor=True)
