@@ -44,7 +44,12 @@ def t2m_max(x):
 
 
 def is_sog(x):
-    return x['sog'].any()
+    if pd.isnull(x['sog']).all():
+        return pd.NA
+    elif x['sog'].any():
+        return True
+    else:
+        return False
 
 
 def summarize_events(df):
