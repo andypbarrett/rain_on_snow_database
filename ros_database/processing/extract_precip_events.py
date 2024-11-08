@@ -52,6 +52,10 @@ def is_sog(x):
         return False
 
 
+def precip_sum(x):
+    return x['p01i'].sum()
+
+
 def summarize_events(df):
     """Returns summary statitistics for each event"""
     grouper = df.groupby(df.event)
@@ -67,10 +71,12 @@ def summarize_events(df):
                           "t2m_mean": grouper.apply(t2m_mean),
                           "t2m_min": grouper.apply(t2m_min),
                           "t2m_max": grouper.apply(t2m_max),
+                          "precip": grouper.apply(precip_sum),
                           "sog": grouper.apply(is_sog),
                       }
     )
     summary.index = summary.start
+    summary.index.name = "timestamp"
     return summary
 
 
