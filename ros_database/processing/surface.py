@@ -345,3 +345,8 @@ def load_hourly_observations(fp: Path) -> pd.DataFrame:
     Pandas dataframe
     """
     return pd.read_csv(fp, parse_dates=True, index_col=0, low_memory=False)
+
+
+def load_event_file(fp: Path) -> pd.DataFrame:
+    """Loads an event file"""
+    return pd.read_csv(fp, header=0, index_col=0, parse_dates=[0,1,2])
