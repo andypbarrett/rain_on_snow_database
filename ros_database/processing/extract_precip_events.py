@@ -52,8 +52,8 @@ def is_sog(x):
         return False
 
 
-def precip_sum(x):
-    return x['p01i'].sum()
+def precip_sum(x, skipna=False):
+    return x['p01i'].sum(skipna=skipna)
 
 
 def summarize_events(df):
