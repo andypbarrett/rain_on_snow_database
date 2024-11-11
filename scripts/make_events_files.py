@@ -12,7 +12,8 @@ def make_outpath(fp: Path) -> Path:
     return SURFOBS_EVENTS_PATH / fp.name.replace('hourly.combined','event')
 
 
-def make_one_event_file(fp: Path, fout: Path) -> None:
+def make_one_event_file(fp: Path, fout: Path,
+                        float_format=".1f") -> None:
     """Makes an event file for one station
 
     Parameters
