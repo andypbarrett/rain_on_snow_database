@@ -311,9 +311,16 @@ def get_country_list():
     return [p.name for p in SURFOBS_RAW_PATH.glob('*') if p.is_dir()]
 
 
-def load_station_metadata():
+def load_station_metadata(**kwargs):
     """Get coordinates of stations as geopandas DataFrame"""
-    df = pd.read_csv(ASOS_METADATA_PATH, header=0, index_col=0)
+    # Ensure at least stid, latitude and longitude are in usecols if
+    # supplied.  If not add them.
+    default_cols = ["stid", "latitude", "longitude"]
+    if "usecols" in kwargs:
+        [kwargs["usecols"].append(col)
+         for col in default_cols if col not in kwargs["usecols"]]
+        
+    df = pd.read_csv(ASOS_METADATA_PATH, header=0, index_col=0, **kwargs)
     geometry = gpd.points_from_xy(df.longitude, df.latitude, crs="EPSG:4326")
     gdf = gpd.GeoDataFrame(df, geometry=geometry)
     return gdf
