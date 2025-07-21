@@ -26,6 +26,19 @@ dependencies:
  - nbdime
  - geocube
  - geodatasets
+ 
+ # For ERA5
+ - cdsapi
+ 
+ # For PGC DEM
+ - pystac-client
+ - ipyleaflet
+ - stackstac
+
+ # For WMTS
+ - owslib
+ 
+ - pip
  - pip:
      - /home/apbarret/src/nsidc_projections
 
