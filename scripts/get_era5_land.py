@@ -21,6 +21,8 @@ FORECAST_HOURS = [
     "00:00", "06:00", "12:00", "18:00",
     ]
 
+OUTPATH = Path.home() / "Data" / "ERA5_Land"
+
 def make_filepath(year, month, outdir="."):
     return Path(outdir) / f"era5_land.snow.{year}.{month:02d}.nc"
 
@@ -65,12 +67,15 @@ def get_era5_land(
         "area": area
     }
 
+    print(f"Getting data for {year}-{month:02d}, writing to {target}")
     client = cdsapi.Client()
     client.retrieve(dataset, request, str(target))
 
 
 if __name__ == "__main__":
-    year = 2020
-    month = 4
-    
-    get_era5_land(year, month)
+    parser = argparse.ArgumentParser(description="Get ERA5 Land Snow Data")
+    parser.add_argument("year", type=int, help="year to get")
+    parser.add_argument("month", type=int, help="month to get")
+    args = parser.parse_args()
+
+    get_era5_land(args.year, args.month, outdir=OUTPATH)
