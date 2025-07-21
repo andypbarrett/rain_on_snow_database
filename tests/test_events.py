@@ -1,7 +1,10 @@
+from pathlib import Path
+
 import pandas as pd
 import numpy as np
 import datetime as dt
 
+from ros_database.processing.surface import load_station_combined_data, load_event_file
 from ros_database.processing.extract_precip_events import find_events
 
 PTYPES = ['UP','RA','FZRA','SOLID']
@@ -74,3 +77,19 @@ def test_identify_precipitation_event():
     except AssertionError:
         print(result)
         print(expected)
+
+
+def test_identify_precipitation_event_file():
+    """Tests creating an event object from a file"""
+    testpath = Path("tests/PAFM.20231111to20231112.hourly.combined.test.csv")
+    expectedpath = Path("tests/PAFM.20231111to20231112.event.expected.csv")
+    df = load_station_combined_data(testpath)
+    expected_df = load_event_file(expectedpath)
+
+    event_df = find_events(df)
+    pd.testing.assert_frame_equal(event_df, expected_df)
+#    with pd.option_context('display.max_rows', None, 'display.max_columns', None):
+#        print(event_df)
+#    with pd.option_context('display.max_rows', None, 'display.max_columns', None):
+#        print(expected)
+    

@@ -6,3 +6,6 @@ duplicate_lists_assessment.txt
 *.double
 *.nc.gz
 *.asc.gz
+
+restricted_ftp_access.md
+
